@@ -7,45 +7,101 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1>Claude Code Chatbot</h1>
-            <div class="header-controls">
-                <div class="model-selector">
-                    <label for="model">Model:</label>
-                    <select id="model">
-                        <option value="sonnet" selected>Sonnet</option>
-                        <option value="opus">Opus</option>
-                        <option value="haiku">Haiku</option>
-                    </select>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button id="new-chat-btn" class="btn btn-new-chat">
+                    <span class="icon">+</span>
+                    New Chat
+                </button>
+            </div>
+
+            <div class="sidebar-search">
+                <input
+                    type="text"
+                    id="search-conversations"
+                    placeholder="Search conversations..."
+                    class="search-input"
+                />
+            </div>
+
+            <div class="conversations-list" id="conversations-list">
+                <!-- Conversations will be loaded here dynamically -->
+            </div>
+
+            <div class="sidebar-footer">
+                <label class="archive-toggle">
+                    <input type="checkbox" id="show-archived" />
+                    <span>Show Archived</span>
+                </label>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar Toggle Button (mobile) -->
+            <button class="sidebar-toggle" id="sidebar-toggle">
+                <span>☰</span>
+            </button>
+
+            <!-- Header -->
+            <header class="header">
+                <div class="conversation-title-wrapper">
+                    <h1 id="conversation-title" class="conversation-title" contenteditable="false">Claude Code Chatbot</h1>
+                    <button id="edit-title-btn" class="btn-icon" title="Edit title">✏️</button>
                 </div>
-                <button id="clear-btn" class="btn btn-secondary">Clear Chat</button>
-            </div>
-        </header>
+                <div class="header-controls">
+                    <div class="model-selector">
+                        <label for="model">Model:</label>
+                        <select id="model">
+                            <option value="sonnet" selected>Sonnet</option>
+                            <option value="opus">Opus</option>
+                            <option value="haiku">Haiku</option>
+                        </select>
+                    </div>
+                    <button id="export-btn" class="btn btn-icon" title="Export conversation">💾</button>
+                    <button id="archive-btn" class="btn btn-icon" title="Archive conversation">📦</button>
+                    <button id="delete-btn" class="btn btn-icon" title="Delete conversation">🗑️</button>
+                    <button id="clear-btn" class="btn btn-secondary">Clear Chat</button>
+                </div>
+            </header>
 
-        <!-- Chat Container -->
-        <div class="chat-container" id="chat-container">
-            <div class="welcome-message">
-                <h2>Welcome! 👋</h2>
-                <p>Start a conversation with Claude Code. Ask me anything!</p>
+            <!-- Chat Container -->
+            <div class="chat-container" id="chat-container">
+                <div class="welcome-message">
+                    <h2>Welcome! 👋</h2>
+                    <p>Start a conversation with Claude Code. Ask me anything!</p>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <textarea
+                    id="user-input"
+                    placeholder="Type your message here..."
+                    rows="1"
+                ></textarea>
+                <button id="send-btn" class="btn btn-primary">Send</button>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <span>Claude is thinking...</span>
             </div>
         </div>
+    </div>
 
-        <!-- Input Area -->
-        <div class="input-area">
-            <textarea
-                id="user-input"
-                placeholder="Type your message here..."
-                rows="1"
-            ></textarea>
-            <button id="send-btn" class="btn btn-primary">Send</button>
-        </div>
-
-        <!-- Loading Indicator -->
-        <div id="loading" class="loading" style="display: none;">
-            <div class="spinner"></div>
-            <span>Claude is thinking...</span>
+    <!-- Confirmation Modal -->
+    <div id="modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 id="modal-title">Confirm Action</h3>
+            <p id="modal-message">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+                <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+            </div>
         </div>
     </div>
 

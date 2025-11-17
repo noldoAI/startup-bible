@@ -11,7 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, send_file
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-change-in-production'  # Change this in production!
@@ -21,6 +22,52 @@ SESSIONS_DIR = Path(__file__).parent / "sessions"
 SESSIONS_DIR.mkdir(exist_ok=True)
 CLAUDE_TIMEOUT = 60  # 1 minute timeout for Claude responses
 DEFAULT_MODEL = "sonnet"
+
+
+def generate_title_from_message(message: str, max_length: int = 50) -> str:
+    """Generate a conversation title from the first message."""
+    if not message:
+        return "New Conversation"
+    # Truncate and add ellipsis if too long
+    if len(message) > max_length:
+        return message[:max_length].strip() + "..."
+    return message.strip()
+
+
+def get_all_sessions() -> List[Dict]:
+    """Get metadata for all saved sessions."""
+    sessions = []
+    for session_file in SESSIONS_DIR.glob("*.json"):
+        try:
+            with open(session_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # Calculate preview and message count
+                message_count = len(data.get("messages", []))
+                preview = ""
+                if message_count > 0:
+                    # Get first user message as preview
+                    for msg in data.get("messages", []):
+                        if msg.get("role") == "user":
+                            preview = msg.get("content", "")[:100]
+                            break
+
+                sessions.append({
+                    "session_id": data.get("session_id"),
+                    "title": data.get("title", generate_title_from_message(preview)),
+                    "created_at": data.get("created_at"),
+                    "updated_at": data.get("updated_at"),
+                    "message_count": message_count,
+                    "preview": preview,
+                    "archived": data.get("archived", False),
+                    "model": data.get("model", DEFAULT_MODEL)
+                })
+        except Exception as e:
+            print(f"Error loading session {session_file}: {e}")
+            continue
+
+    # Sort by updated_at (most recent first)
+    sessions.sort(key=lambda x: x.get("updated_at", x.get("created_at", "")), reverse=True)
+    return sessions
 
 
 class ConversationManager:
@@ -36,10 +83,18 @@ class ConversationManager:
         """Load existing session or create new one."""
         if self.session_file.exists():
             with open(self.session_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                data = json.load(f)
+                # Add default values for new fields if missing (backward compatibility)
+                if "title" not in data:
+                    data["title"] = None
+                if "archived" not in data:
+                    data["archived"] = False
+                return data
         else:
             return {
                 "session_id": self.session_id,
+                "title": None,
+                "archived": False,
                 "model": self.model,
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "messages": []
@@ -116,6 +171,10 @@ class ConversationManager:
                 "timestamp": datetime.now(timezone.utc).isoformat()
             })
 
+            # Auto-generate title from first message if not set
+            if not self.conversation.get("title") and len(self.conversation["messages"]) == 2:
+                self.conversation["title"] = generate_title_from_message(user_message)
+
             self._save_session()
 
             return {
@@ -145,6 +204,28 @@ class ConversationManager:
         """Clear conversation history."""
         self.conversation["messages"] = []
         self._save_session()
+
+    def update_title(self, title: str) -> None:
+        """Update conversation title."""
+        self.conversation["title"] = title
+        self._save_session()
+
+    def update_archived(self, archived: bool) -> None:
+        """Update archived status."""
+        self.conversation["archived"] = archived
+        self._save_session()
+
+    def get_metadata(self) -> Dict:
+        """Get conversation metadata."""
+        return {
+            "session_id": self.conversation["session_id"],
+            "title": self.conversation.get("title"),
+            "archived": self.conversation.get("archived", False),
+            "model": self.conversation["model"],
+            "created_at": self.conversation.get("created_at"),
+            "updated_at": self.conversation.get("updated_at"),
+            "message_count": len(self.conversation["messages"])
+        }
 
 
 # Flask Routes
@@ -205,6 +286,204 @@ def clear_history():
     manager.clear_history()
 
     return jsonify({"success": True})
+
+
+@app.route('/api/conversations', methods=['GET'])
+def get_conversations():
+    """Get list of all conversations."""
+    try:
+        sessions = get_all_sessions()
+        return jsonify({"success": True, "conversations": sessions})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/conversations/new', methods=['POST'])
+def new_conversation():
+    """Create a new conversation."""
+    try:
+        # Generate new session ID
+        new_session_id = str(uuid.uuid4())
+        session['session_id'] = new_session_id
+
+        # Create new conversation manager (this will create the session file)
+        data = request.get_json() or {}
+        model = data.get('model', DEFAULT_MODEL)
+        manager = ConversationManager(new_session_id, model)
+
+        return jsonify({
+            "success": True,
+            "session_id": new_session_id,
+            "metadata": manager.get_metadata()
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/conversations/<session_id>/switch', methods=['POST'])
+def switch_conversation(session_id):
+    """Switch to a different conversation."""
+    try:
+        # Check if session exists
+        session_file = SESSIONS_DIR / f"{session_id}.json"
+        if not session_file.exists():
+            return jsonify({"success": False, "error": "Session not found"}), 404
+
+        # Update Flask session
+        session['session_id'] = session_id
+
+        # Load conversation
+        data = request.get_json() or {}
+        model = data.get('model', DEFAULT_MODEL)
+        manager = ConversationManager(session_id, model)
+
+        return jsonify({
+            "success": True,
+            "session_id": session_id,
+            "messages": manager.get_history(),
+            "metadata": manager.get_metadata()
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/conversations/<session_id>', methods=['DELETE'])
+def delete_conversation(session_id):
+    """Delete a conversation."""
+    try:
+        session_file = SESSIONS_DIR / f"{session_id}.json"
+        if not session_file.exists():
+            return jsonify({"success": False, "error": "Session not found"}), 404
+
+        # Delete the file
+        os.remove(session_file)
+
+        # Clear current session if it's the one being deleted
+        if session.get('session_id') == session_id:
+            session.pop('session_id', None)
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/conversations/<session_id>/export', methods=['GET'])
+def export_conversation(session_id):
+    """Export conversation as JSON file."""
+    try:
+        session_file = SESSIONS_DIR / f"{session_id}.json"
+        if not session_file.exists():
+            return jsonify({"success": False, "error": "Session not found"}), 404
+
+        # Send file as attachment
+        return send_file(
+            session_file,
+            mimetype='application/json',
+            as_attachment=True,
+            download_name=f"conversation_{session_id}.json"
+        )
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/conversations/<session_id>/title', methods=['PUT'])
+def update_conversation_title(session_id):
+    """Update conversation title."""
+    try:
+        data = request.get_json()
+        title = data.get('title', '').strip()
+
+        if not title:
+            return jsonify({"success": False, "error": "Title cannot be empty"}), 400
+
+        session_file = SESSIONS_DIR / f"{session_id}.json"
+        if not session_file.exists():
+            return jsonify({"success": False, "error": "Session not found"}), 404
+
+        model = data.get('model', DEFAULT_MODEL)
+        manager = ConversationManager(session_id, model)
+        manager.update_title(title)
+
+        return jsonify({"success": True, "title": title})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/conversations/<session_id>/archive', methods=['PUT'])
+def update_conversation_archive(session_id):
+    """Update conversation archived status."""
+    try:
+        data = request.get_json()
+        archived = data.get('archived', False)
+
+        session_file = SESSIONS_DIR / f"{session_id}.json"
+        if not session_file.exists():
+            return jsonify({"success": False, "error": "Session not found"}), 404
+
+        model = data.get('model', DEFAULT_MODEL)
+        manager = ConversationManager(session_id, model)
+        manager.update_archived(archived)
+
+        return jsonify({"success": True, "archived": archived})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/conversations/search', methods=['GET'])
+def search_conversations():
+    """Search across all conversations."""
+    try:
+        query = request.args.get('q', '').strip().lower()
+        if not query:
+            return jsonify({"success": False, "error": "Query cannot be empty"}), 400
+
+        results = []
+        for session_file in SESSIONS_DIR.glob("*.json"):
+            try:
+                with open(session_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+
+                    # Search in title
+                    title = data.get("title", "")
+                    if title and query in title.lower():
+                        results.append({
+                            "session_id": data.get("session_id"),
+                            "title": title,
+                            "match_type": "title",
+                            "excerpt": title
+                        })
+                        continue
+
+                    # Search in messages
+                    for msg in data.get("messages", []):
+                        content = msg.get("content", "")
+                        if query in content.lower():
+                            # Extract excerpt around match
+                            idx = content.lower().index(query)
+                            start = max(0, idx - 50)
+                            end = min(len(content), idx + len(query) + 50)
+                            excerpt = content[start:end]
+                            if start > 0:
+                                excerpt = "..." + excerpt
+                            if end < len(content):
+                                excerpt = excerpt + "..."
+
+                            results.append({
+                                "session_id": data.get("session_id"),
+                                "title": data.get("title", generate_title_from_message(
+                                    next((m["content"] for m in data.get("messages", []) if m.get("role") == "user"), "")
+                                )),
+                                "match_type": "message",
+                                "excerpt": excerpt
+                            })
+                            break  # Only include each conversation once
+            except Exception as e:
+                print(f"Error searching session {session_file}: {e}")
+                continue
+
+        return jsonify({"success": True, "results": results})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 def main():

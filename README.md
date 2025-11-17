@@ -6,7 +6,7 @@ A collection of startup resources designed to be LLM-ready and conversational. T
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/noldoAI/startup-bible
 cd startup-bible
 
 # Set up Python virtual environment

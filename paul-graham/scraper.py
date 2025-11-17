@@ -206,6 +206,7 @@ class EssayScraper:
         content_data = self.extract_content(soup)
 
         # Build essay object
+        from datetime import timezone
         essay = {
             'id': essay_id,
             'title': title,
@@ -214,7 +215,7 @@ class EssayScraper:
             'content': content_data['content'],
             'footnotes': content_data['footnotes'],
             'word_count': content_data['word_count'],
-            'scraped_at': datetime.utcnow().isoformat() + 'Z'
+            'scraped_at': datetime.now(timezone.utc).isoformat()
         }
 
         return essay
@@ -273,10 +274,11 @@ scraped_at: {essay['scraped_at']}
             reverse=True
         )
 
+        from datetime import timezone
         index_data = {
             'essays': sorted_essays,
             'total_count': len(sorted_essays),
-            'last_updated': datetime.utcnow().isoformat() + 'Z'
+            'last_updated': datetime.now(timezone.utc).isoformat()
         }
 
         # Ensure data directory exists

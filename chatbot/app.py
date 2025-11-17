@@ -24,6 +24,7 @@ SESSIONS_DIR.mkdir(exist_ok=True)
 SHARES_FILE = SESSIONS_DIR / "shares.json"
 CLAUDE_TIMEOUT = 60  # 1 minute timeout for Claude responses
 DEFAULT_MODEL = "sonnet"
+SYSTEM_PROMPT = "You are a helpful AI assistant. Respond to the user's message naturally and conversationally."
 
 
 def generate_title_from_message(message: str, max_length: int = 50) -> str:
@@ -169,7 +170,7 @@ class ConversationManager:
         prompt_parts = []
 
         # Add system instruction
-        prompt_parts.append("You are a helpful AI assistant. Respond to the user's message naturally and conversationally.")
+        prompt_parts.append(SYSTEM_PROMPT)
 
         # Add conversation history (last 10 messages for context)
         if self.conversation["messages"]:
@@ -191,6 +192,15 @@ class ConversationManager:
         Returns dict with 'success', 'response', and optional 'error'.
         """
         prompt = self._build_prompt(user_message)
+
+        # Build debug info
+        debug_info = {
+            "prompt_sent": prompt,
+            "prompt_length": len(prompt),
+            "system_prompt": SYSTEM_PROMPT,
+            "history_messages_count": len(self.conversation["messages"][-10:]) if self.conversation["messages"] else 0,
+            "model": self.model
+        }
 
         cmd = [
             "claude",
@@ -226,7 +236,8 @@ class ConversationManager:
             self.conversation["messages"].append({
                 "role": "assistant",
                 "content": response,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "debug_info": debug_info
             })
 
             # Auto-generate title from first message if not set
@@ -237,7 +248,8 @@ class ConversationManager:
 
             return {
                 "success": True,
-                "response": response
+                "response": response,
+                "debug_info": debug_info
             }
 
         except subprocess.TimeoutExpired:

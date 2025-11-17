@@ -19,6 +19,7 @@ const showArchivedCheckbox = document.getElementById('show-archived');
 // DOM Elements - Header
 const conversationTitle = document.getElementById('conversation-title');
 const editTitleBtn = document.getElementById('edit-title-btn');
+const debugModeCheckbox = document.getElementById('debug-mode');
 const exportBtn = document.getElementById('export-btn');
 const shareBtn = document.getElementById('share-btn');
 const archiveBtn = document.getElementById('archive-btn');
@@ -43,6 +44,7 @@ let isProcessing = false;
 let currentSessionId = null;
 let allConversations = [];
 let modalCallback = null;
+let isDebugMode = false;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
@@ -58,6 +60,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentSessionId = sessionId;
         conversationTitle.dataset.sessionId = sessionId;
     }
+
+    // Load debug mode preference from localStorage
+    isDebugMode = localStorage.getItem('debugMode') === 'true';
+    debugModeCheckbox.checked = isDebugMode;
 
     loadConversations();
     loadHistory();
@@ -98,6 +104,9 @@ function setupEventListeners() {
 
     // Show archived toggle
     showArchivedCheckbox.addEventListener('change', filterConversations);
+
+    // Debug mode toggle
+    debugModeCheckbox.addEventListener('change', toggleDebugMode);
 
     // Edit title
     editTitleBtn.addEventListener('click', enableTitleEdit);
@@ -215,8 +224,8 @@ async function sendMessage() {
         const data = await response.json();
 
         if (data.success) {
-            // Add assistant response
-            addMessage('assistant', data.response);
+            // Add assistant response with debug info
+            addMessage('assistant', data.response, true, data.debug_info);
             // Reload conversations to update title/metadata
             await loadConversations();
         } else {
@@ -234,7 +243,7 @@ async function sendMessage() {
 }
 
 // Add Message to UI
-function addMessage(role, content, streaming = true) {
+function addMessage(role, content, streaming = true, debug_info = null) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${role}`;
 
@@ -253,11 +262,16 @@ function addMessage(role, content, streaming = true) {
     if (role === 'user' || !streaming) {
         messageContent.textContent = content;
         chatContainer.scrollTop = chatContainer.scrollHeight;
-        return;
+    } else {
+        // For assistant messages, add typing animation
+        typeMessage(messageContent, content);
     }
 
-    // For assistant messages, add typing animation
-    typeMessage(messageContent, content);
+    // Add debug panel for assistant messages if debug mode is enabled and debug_info is available
+    if (role === 'assistant' && debug_info) {
+        const debugPanel = createDebugPanel(debug_info);
+        chatContainer.appendChild(debugPanel);
+    }
 }
 
 // Typing animation for streaming effect
@@ -332,7 +346,7 @@ async function loadHistory() {
 
             // Add messages without streaming (instant for history)
             data.messages.forEach(msg => {
-                addMessage(msg.role, msg.content, false);
+                addMessage(msg.role, msg.content, false, msg.debug_info);
             });
         }
     } catch (error) {
@@ -472,7 +486,7 @@ async function switchConversation(sessionId) {
             chatContainer.innerHTML = '';
             if (data.messages && data.messages.length > 0) {
                 data.messages.forEach(msg => {
-                    addMessage(msg.role, msg.content, false);
+                    addMessage(msg.role, msg.content, false, msg.debug_info);
                 });
             } else {
                 chatContainer.innerHTML = `
@@ -810,6 +824,84 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Debug Panel Functions
+function createDebugPanel(debug_info) {
+    const panel = document.createElement('div');
+    panel.className = isDebugMode ? 'debug-panel' : 'debug-panel hidden';
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'debug-panel-header';
+
+    const title = document.createElement('div');
+    title.className = 'debug-panel-title';
+    title.textContent = 'Debug Info';
+
+    const toggle = document.createElement('div');
+    toggle.className = 'debug-panel-toggle';
+    toggle.textContent = '▼';
+
+    header.appendChild(title);
+    header.appendChild(toggle);
+
+    // Content
+    const content = document.createElement('div');
+    content.className = 'debug-panel-content';
+
+    // Metadata
+    const metadata = document.createElement('div');
+    metadata.className = 'debug-metadata';
+
+    metadata.innerHTML = `
+        <div class="debug-metadata-item"><strong>Model:</strong> ${escapeHtml(debug_info.model)}</div>
+        <div class="debug-metadata-item"><strong>Prompt Length:</strong> ${debug_info.prompt_length} chars</div>
+        <div class="debug-metadata-item"><strong>History Messages:</strong> ${debug_info.history_messages_count}</div>
+    `;
+
+    // Prompt
+    const promptSection = document.createElement('div');
+    promptSection.className = 'debug-prompt';
+
+    const promptLabel = document.createElement('div');
+    promptLabel.className = 'debug-prompt-label';
+    promptLabel.textContent = 'Full Prompt Sent to Claude:';
+
+    const promptContent = document.createElement('div');
+    promptContent.className = 'debug-prompt-content';
+    promptContent.textContent = debug_info.prompt_sent;
+
+    promptSection.appendChild(promptLabel);
+    promptSection.appendChild(promptContent);
+
+    content.appendChild(metadata);
+    content.appendChild(promptSection);
+
+    panel.appendChild(header);
+    panel.appendChild(content);
+
+    // Add click handler to toggle expand/collapse
+    header.addEventListener('click', () => {
+        panel.classList.toggle('expanded');
+    });
+
+    return panel;
+}
+
+function toggleDebugMode() {
+    isDebugMode = debugModeCheckbox.checked;
+    localStorage.setItem('debugMode', isDebugMode.toString());
+
+    // Show or hide all debug panels
+    const debugPanels = document.querySelectorAll('.debug-panel');
+    debugPanels.forEach(panel => {
+        if (isDebugMode) {
+            panel.classList.remove('hidden');
+        } else {
+            panel.classList.add('hidden');
+        }
+    });
 }
 
 // Handle errors

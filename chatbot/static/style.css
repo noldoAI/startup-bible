@@ -416,6 +416,33 @@ body {
     color: #e5e5e5;
 }
 
+/* Debug Toggle */
+.debug-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.debug-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #ffffff;
+}
+
+.debug-toggle span {
+    font-size: 13px;
+    font-weight: 400;
+    color: #999;
+    letter-spacing: 0.01em;
+}
+
+.debug-toggle:hover span {
+    color: #e5e5e5;
+}
+
 /* Chat Container */
 .chat-container {
     flex: 1;
@@ -557,6 +584,114 @@ body {
     51%, 100% {
         opacity: 0;
     }
+}
+
+/* Debug Panel */
+.debug-panel {
+    margin-top: 12px;
+    margin-left: 52px;
+    max-width: 70%;
+    background: #0a0a0a;
+    border: 1px solid #222;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.debug-panel.hidden {
+    display: none;
+}
+
+.debug-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #111;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid #222;
+}
+
+.debug-panel-header:hover {
+    background: #161616;
+}
+
+.debug-panel-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #999;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.debug-panel-toggle {
+    font-size: 10px;
+    color: #666;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.debug-panel.expanded .debug-panel-toggle {
+    transform: rotate(180deg);
+}
+
+.debug-panel-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.debug-panel.expanded .debug-panel-content {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.debug-metadata {
+    padding: 12px 14px;
+    background: #0a0a0a;
+    border-bottom: 1px solid #222;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+}
+
+.debug-metadata-item {
+    font-size: 11px;
+    color: #666;
+}
+
+.debug-metadata-item strong {
+    color: #999;
+    font-weight: 500;
+}
+
+.debug-prompt {
+    padding: 14px;
+    background: #000000;
+}
+
+.debug-prompt-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+}
+
+.debug-prompt-content {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #999;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 4px;
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 /* Input Area */

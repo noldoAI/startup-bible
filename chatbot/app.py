@@ -148,10 +148,13 @@ class ConversationManager:
                     data["title"] = None
                 if "archived" not in data:
                     data["archived"] = False
+                if "claude_session_id" not in data:
+                    data["claude_session_id"] = None
                 return data
         else:
             return {
                 "session_id": self.session_id,
+                "claude_session_id": None,  # Claude Code's native session ID
                 "title": None,
                 "archived": False,
                 "model": self.model,
@@ -165,49 +168,86 @@ class ConversationManager:
         with open(self.session_file, 'w', encoding='utf-8') as f:
             json.dump(self.conversation, f, ensure_ascii=False, indent=2)
 
-    def _build_prompt(self, user_message: str) -> str:
-        """Build prompt with conversation history."""
-        prompt_parts = []
+    def _build_message_with_context(self, user_message: str, injected_context: Optional[Dict] = None) -> str:
+        """
+        Build the actual message to send to Claude, optionally including context.
 
-        # Add system instruction
-        prompt_parts.append(SYSTEM_PROMPT)
+        Claude Code manages conversation history via --resume, so we don't need to
+        manually include previous messages. We only augment the current message with
+        additional context (essays, documents, etc.) if provided.
 
-        # Add conversation history (last 10 messages for context)
-        if self.conversation["messages"]:
-            prompt_parts.append("\nConversation history:")
-            for msg in self.conversation["messages"][-10:]:
-                role = msg["role"].capitalize()
-                content = msg["content"]
-                prompt_parts.append(f"{role}: {content}")
+        Args:
+            user_message: The user's question/message
+            injected_context: Optional dict with keys like:
+                - 'essays': list of essay dicts with 'title', 'file', 'content'
+                - 'instructions': special instructions for this message
+                - 'metadata': any other context metadata
 
-        # Add current message
-        prompt_parts.append(f"\nUser: {user_message}")
-        prompt_parts.append("\nAssistant:")
+        Returns:
+            The message string to send to Claude (may include injected context)
+        """
+        if not injected_context:
+            return user_message
 
-        return "\n".join(prompt_parts)
+        parts = []
 
-    def ask_claude(self, user_message: str) -> Dict:
+        # Add essay context if provided
+        if 'essays' in injected_context and injected_context['essays']:
+            parts.append("=== CONTEXT FROM ESSAYS ===\n")
+            for essay in injected_context['essays']:
+                parts.append(f"Essay Title: {essay['title']}")
+                if 'file' in essay:
+                    parts.append(f"Source: {essay['file']}")
+                parts.append(f"\nContent:\n{essay['content']}\n")
+                parts.append("-" * 60)
+            parts.append("=== END CONTEXT ===\n")
+
+        # Add any special instructions
+        if 'instructions' in injected_context and injected_context['instructions']:
+            parts.append(f"{injected_context['instructions']}\n")
+
+        # Add the actual user question
+        parts.append(f"User question: {user_message}")
+
+        return "\n".join(parts)
+
+    def ask_claude(self, user_message: str, injected_context: Optional[Dict] = None) -> Dict:
         """
         Send message to Claude Code and get response.
-        Returns dict with 'success', 'response', and optional 'error'.
+
+        Uses Claude Code's native session management via --resume for conversation history.
+        Optionally augments the message with additional context (essays, documents, etc.).
+
+        Args:
+            user_message: The user's question/message
+            injected_context: Optional context to inject (essays, instructions, etc.)
+
+        Returns:
+            dict with 'success', 'response', 'debug_info', and optional 'error'
         """
-        prompt = self._build_prompt(user_message)
+        # Build the actual message to send (may include injected context)
+        message_to_send = self._build_message_with_context(user_message, injected_context)
 
-        # Build debug info
-        debug_info = {
-            "prompt_sent": prompt,
-            "prompt_length": len(prompt),
-            "system_prompt": SYSTEM_PROMPT,
-            "history_messages_count": len(self.conversation["messages"][-10:]) if self.conversation["messages"] else 0,
-            "model": self.model
-        }
+        # Check if this is the first message or a follow-up
+        claude_session_id = self.conversation.get("claude_session_id")
 
-        cmd = [
-            "claude",
-            "-p", prompt,
-            "--output-format", "text",
-            "--model", self.model
-        ]
+        if not claude_session_id:
+            # First message: Create new Claude Code session
+            cmd = [
+                "claude",
+                "-p", message_to_send,
+                "--output-format", "json",
+                "--model", self.model,
+                "--append-system-prompt", SYSTEM_PROMPT
+            ]
+        else:
+            # Follow-up message: Resume existing Claude Code session
+            cmd = [
+                "claude",
+                "--resume", claude_session_id,
+                message_to_send,
+                "--output-format", "json"
+            ]
 
         try:
             result = subprocess.run(
@@ -225,14 +265,72 @@ class ConversationManager:
                     "response": f"Error: {error_msg}"
                 }
 
-            response = result.stdout.strip()
+            # Parse JSON response from Claude Code
+            try:
+                response_data = json.loads(result.stdout)
+            except json.JSONDecodeError as e:
+                return {
+                    "success": False,
+                    "error": f"Failed to parse Claude response: {str(e)}",
+                    "response": f"Error: Failed to parse response from Claude"
+                }
+
+            # Extract response and metadata
+            # Claude Code returns 'result' field, not 'response'
+            response = response_data.get('result', '').strip()
+
+            # Store Claude Code's session ID (from first response)
+            if 'session_id' in response_data:
+                self.conversation["claude_session_id"] = response_data['session_id']
+
+            # Build rich debug info
+            debug_info = {
+                "session_management": {
+                    "claude_session_id": self.conversation.get("claude_session_id"),
+                    "our_session_id": self.session_id,
+                    "is_first_message": claude_session_id is None,
+                    "model": self.model
+                },
+                "message_flow": {
+                    "user_message_original": user_message,
+                    "message_sent_to_claude": message_to_send,
+                    "message_length": len(message_to_send),
+                    "context_injected": injected_context is not None,
+                    "injected_context": injected_context if injected_context else None
+                },
+                "performance": {
+                    "token_cost": response_data.get('total_cost_usd'),
+                    "duration_ms": response_data.get('duration_ms'),
+                    "turn_count": response_data.get('num_turns'),
+                    "response_length": len(response)
+                },
+                "metadata": {
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "system_prompt": SYSTEM_PROMPT,
+                    "conversation_context": "Managed by Claude Code via --resume"
+                }
+            }
+
+            # Prepare context metadata for user message
+            context_metadata = None
+            if injected_context and 'essays' in injected_context:
+                context_metadata = {
+                    "essays_included": [essay.get('file', essay.get('title', 'unknown'))
+                                       for essay in injected_context['essays']],
+                    "context_type": "essay_retrieval",
+                    "essay_count": len(injected_context['essays'])
+                }
 
             # Save messages to conversation history
-            self.conversation["messages"].append({
+            user_msg_data = {
                 "role": "user",
                 "content": user_message,
                 "timestamp": datetime.now(timezone.utc).isoformat()
-            })
+            }
+            if context_metadata:
+                user_msg_data["context_metadata"] = context_metadata
+
+            self.conversation["messages"].append(user_msg_data)
             self.conversation["messages"].append({
                 "role": "assistant",
                 "content": response,
@@ -347,6 +445,9 @@ def chat():
     user_message = data.get('message', '').strip()
     model = data.get('model', DEFAULT_MODEL)
 
+    # Optional: Context injection for RAG features
+    context = data.get('context')  # Optional dict with 'essays', 'instructions', etc.
+
     if not user_message:
         return jsonify({"success": False, "error": "Message cannot be empty"}), 400
 
@@ -354,9 +455,9 @@ def chat():
     session_id = session.get('session_id', str(uuid.uuid4()))
     session['session_id'] = session_id
 
-    # Process message
+    # Process message with optional context injection
     manager = ConversationManager(session_id, model)
-    result = manager.ask_claude(user_message)
+    result = manager.ask_claude(user_message, injected_context=context)
 
     return jsonify(result)
 

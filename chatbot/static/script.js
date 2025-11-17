@@ -841,11 +841,16 @@ function createDebugPanel(debug_info) {
 
     const title = document.createElement('div');
     title.className = 'debug-panel-title';
-    title.textContent = 'Debug Info';
+    title.textContent = '🔧 DEBUG INFO';
 
     const preview = document.createElement('div');
     preview.className = 'debug-panel-preview';
-    preview.textContent = `${debug_info.model} · ${debug_info.prompt_length} chars`;
+
+    // Build preview based on new structure
+    const model = debug_info.session_management?.model || 'unknown';
+    const msgLength = debug_info.message_flow?.message_length || 0;
+    const contextInjected = debug_info.message_flow?.context_injected || false;
+    preview.textContent = `${model} · ${msgLength} chars${contextInjected ? ' · 📄 Context Injected' : ''}`;
 
     headerLeft.appendChild(title);
     headerLeft.appendChild(preview);
@@ -856,61 +861,136 @@ function createDebugPanel(debug_info) {
     const content = document.createElement('div');
     content.className = 'debug-panel-content';
 
-    // Metadata
-    const metadata = document.createElement('div');
-    metadata.className = 'debug-metadata';
+    // Session Management Section
+    if (debug_info.session_management) {
+        const sessionSection = createDebugSection('Session Management', [
+            { label: 'Claude Code Session', value: debug_info.session_management.claude_session_id || 'N/A' },
+            { label: 'Our Session', value: debug_info.session_management.our_session_id || 'N/A' },
+            { label: 'Model', value: debug_info.session_management.model || 'N/A' },
+            { label: 'First Message', value: debug_info.session_management.is_first_message ? 'Yes' : 'No' }
+        ]);
+        content.appendChild(sessionSection);
+    }
 
-    metadata.innerHTML = `
-        <div class="debug-metadata-item">
-            <strong>Model:</strong>
-            <span class="value">${escapeHtml(debug_info.model)}</span>
-        </div>
-        <div class="debug-metadata-item">
-            <strong>Prompt Length:</strong>
-            <span class="value">${debug_info.prompt_length} chars</span>
-        </div>
-        <div class="debug-metadata-item">
-            <strong>History:</strong>
-            <span class="value">${debug_info.history_messages_count} msgs</span>
-        </div>
-    `;
+    // Message Flow Section
+    if (debug_info.message_flow) {
+        const items = [
+            { label: 'User Message', value: debug_info.message_flow.user_message_original || 'N/A' },
+            { label: 'Message Length', value: `${debug_info.message_flow.message_length || 0} characters` },
+            { label: 'Context Injected', value: debug_info.message_flow.context_injected ? 'Yes ✅' : 'No' }
+        ];
 
-    // Prompt section
-    const promptSection = document.createElement('div');
-    promptSection.className = 'debug-prompt';
+        // Add context details if injected
+        if (debug_info.message_flow.context_injected && debug_info.message_flow.injected_context) {
+            const ctx = debug_info.message_flow.injected_context;
+            if (ctx.essays && ctx.essays.length > 0) {
+                const essayTitles = ctx.essays.map(e => e.title || e.file || 'Unknown').join(', ');
+                items.push({ label: '📄 Essays Included', value: essayTitles });
+                items.push({ label: 'Essay Count', value: ctx.essays.length.toString() });
+            }
+        }
 
-    const promptHeader = document.createElement('div');
-    promptHeader.className = 'debug-prompt-header';
+        const messageSection = createDebugSection('Message Flow', items);
+        content.appendChild(messageSection);
+    }
 
-    const promptLabel = document.createElement('div');
-    promptLabel.className = 'debug-prompt-label';
-    promptLabel.textContent = 'Full Prompt Sent to Claude';
+    // Performance Section
+    if (debug_info.performance) {
+        const perfItems = [];
+        if (debug_info.performance.token_cost) {
+            perfItems.push({ label: 'Token Cost', value: debug_info.performance.token_cost });
+        }
+        if (debug_info.performance.duration_ms) {
+            perfItems.push({ label: 'Duration', value: `${debug_info.performance.duration_ms}ms` });
+        }
+        if (debug_info.performance.turn_count !== undefined) {
+            perfItems.push({ label: 'Turn Count', value: debug_info.performance.turn_count.toString() });
+        }
+        if (debug_info.performance.response_length) {
+            perfItems.push({ label: 'Response Length', value: `${debug_info.performance.response_length} chars` });
+        }
 
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'debug-copy-btn';
-    copyBtn.textContent = 'Copy';
-    copyBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        copyPromptToClipboard(debug_info.prompt_sent, copyBtn);
-    });
+        if (perfItems.length > 0) {
+            const perfSection = createDebugSection('Performance', perfItems);
+            content.appendChild(perfSection);
+        }
+    }
 
-    promptHeader.appendChild(promptLabel);
-    promptHeader.appendChild(copyBtn);
+    // Context Information
+    if (debug_info.metadata) {
+        const contextInfo = document.createElement('div');
+        contextInfo.className = 'debug-context-info';
+        contextInfo.innerHTML = `
+            <div class="debug-context-note">
+                <strong>ℹ️ Conversation Context:</strong> ${escapeHtml(debug_info.metadata.conversation_context || 'Managed by Claude Code via --resume')}
+            </div>
+        `;
+        content.appendChild(contextInfo);
+    }
 
-    const promptContent = document.createElement('div');
-    promptContent.className = 'debug-prompt-content';
-    promptContent.innerHTML = highlightPrompt(debug_info.prompt_sent);
+    // Full Message Sent Section (collapsible)
+    if (debug_info.message_flow?.message_sent_to_claude) {
+        const messageSection = document.createElement('div');
+        messageSection.className = 'debug-prompt';
 
-    promptSection.appendChild(promptHeader);
-    promptSection.appendChild(promptContent);
+        const messageHeader = document.createElement('div');
+        messageHeader.className = 'debug-prompt-header';
 
-    content.appendChild(metadata);
-    content.appendChild(promptSection);
+        const messageLabel = document.createElement('div');
+        messageLabel.className = 'debug-prompt-label';
+        messageLabel.textContent = 'Full Message Sent to Claude';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'debug-copy-btn';
+        copyBtn.textContent = 'Copy';
+        copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            copyPromptToClipboard(debug_info.message_flow.message_sent_to_claude, copyBtn);
+        });
+
+        messageHeader.appendChild(messageLabel);
+        messageHeader.appendChild(copyBtn);
+
+        const messageContent = document.createElement('div');
+        messageContent.className = 'debug-prompt-content';
+        messageContent.innerHTML = highlightPrompt(debug_info.message_flow.message_sent_to_claude);
+
+        messageSection.appendChild(messageHeader);
+        messageSection.appendChild(messageContent);
+
+        content.appendChild(messageSection);
+    }
 
     panel.appendChild(header);
     panel.appendChild(content);
 
     return panel;
+}
+
+function createDebugSection(title, items) {
+    const section = document.createElement('div');
+    section.className = 'debug-section';
+
+    const sectionTitle = document.createElement('div');
+    sectionTitle.className = 'debug-section-title';
+    sectionTitle.textContent = title;
+    section.appendChild(sectionTitle);
+
+    const metadata = document.createElement('div');
+    metadata.className = 'debug-metadata';
+
+    items.forEach(item => {
+        const metadataItem = document.createElement('div');
+        metadataItem.className = 'debug-metadata-item';
+        metadataItem.innerHTML = `
+            <strong>${escapeHtml(item.label)}:</strong>
+            <span class="value">${escapeHtml(item.value)}</span>
+        `;
+        metadata.appendChild(metadataItem);
+    });
+
+    section.appendChild(metadata);
+    return section;
 }
 
 async function copyPromptToClipboard(text, button) {

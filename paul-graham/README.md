@@ -131,6 +131,69 @@ print(content)
 python -m json.tool data/index.json | grep title
 ```
 
+## Enriching Index with AI Metadata
+
+Use Claude Code to enrich `index.json` with metadata for conversational chatbot retrieval.
+
+### Setup
+
+Ensure you have Claude Code installed and authenticated:
+```bash
+claude --version
+```
+
+### Usage
+
+**Test with 10 essays first:**
+```bash
+python enrich_index.py --limit 10
+```
+
+**Process all remaining essays:**
+```bash
+python enrich_index.py
+```
+
+**Force re-enrich all essays:**
+```bash
+python enrich_index.py --force
+```
+
+**Options:**
+- `--limit N` - Process only first N essays (for testing)
+- `--force` - Re-enrich essays that already have metadata
+- `--model opus|sonnet|haiku` - Choose Claude model (default: opus)
+
+### Enriched Metadata
+
+The enrichment process adds these fields to each essay:
+
+```json
+{
+  "summary": "2-3 sentence overview",
+  "topics": ["startups", "ideas", "product-market-fit"],
+  "key_concepts": ["organic ideas", "solve your own problems"],
+  "questions_answered": ["How do I find startup ideas?"],
+  "target_audience": ["aspiring founders", "early-stage founders"],
+  "difficulty_level": "beginner",
+  "enriched_at": "2025-11-17T16:00:00Z"
+}
+```
+
+### Process Details
+
+- **Incremental saving**: Index updated after each essay (safe to interrupt)
+- **Resume capability**: Automatically skips essays with existing metadata
+- **Progress tracking**: Real-time progress with essay titles
+- **Error handling**: Logs failures, continues to next essay
+- **Rate limiting**: 2-second delay between requests
+- **Logging**: Detailed log saved to `enrichment.log`
+
+### Expected Time
+
+- 10 essays: ~5 minutes
+- All 200+ essays: ~1-2 hours (with 2s delays)
+
 ## Features
 
 - **Individual Markdown files**: Each essay saved separately for easy LLM consumption

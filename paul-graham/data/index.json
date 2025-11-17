@@ -8,7 +8,42 @@
       "file": "essays/google.md",
       "word_count": 2618,
       "has_footnotes": true,
-      "scraped_at": "2025-11-17T11:30:28.557810Z"
+      "scraped_at": "2025-11-17T11:30:28.557810Z",
+      "summary": "A talk for teenagers explaining how to prepare for starting a successful startup like Google, emphasizing that you need to get good at technology through personal projects, find cofounders through collaboration, and attend a selective university to meet talented people. The key insight is that the best startups grow naturally from projects built for yourself and friends, not from deliberate attempts to start a company.",
+      "topics": [
+        "startups",
+        "entrepreneurship",
+        "education",
+        "technology",
+        "programming",
+        "founders"
+      ],
+      "key_concepts": [
+        "personal projects",
+        "cofounder selection",
+        "startup ideas from solving personal problems",
+        "learning by building",
+        "selective universities as talent pools"
+      ],
+      "questions_answered": [
+        "How can young people prepare to start a successful startup?",
+        "Where do good startup ideas come from?",
+        "How do you find the right cofounders?",
+        "Why do top universities produce more successful startups?"
+      ],
+      "related_essay_ids": [
+        "start",
+        "startupideas",
+        "ds",
+        "before"
+      ],
+      "target_audience": [
+        "students",
+        "aspiring founders",
+        "programmers"
+      ],
+      "difficulty_level": "beginner",
+      "enriched_at": "2025-11-17T12:05:58.869252+00:00"
     },
     {
       "id": "getideas",
@@ -18,7 +53,40 @@
       "file": "essays/getideas.md",
       "word_count": 145,
       "has_footnotes": false,
-      "scraped_at": "2025-11-17T11:30:31.007134Z"
+      "scraped_at": "2025-11-17T11:30:31.007134Z",
+      "summary": "New ideas come from noticing anomalies—things that seem strange, missing, or broken—particularly at the frontiers of knowledge. Knowledge grows fractally with seemingly smooth edges that reveal gaps when examined closely, and exploring these gaps can yield entirely new areas of discovery.",
+      "topics": [
+        "creativity",
+        "innovation",
+        "knowledge",
+        "ideas",
+        "discovery",
+        "problem-solving"
+      ],
+      "key_concepts": [
+        "anomalies",
+        "fractal growth of knowledge",
+        "knowledge frontiers",
+        "gaps in understanding"
+      ],
+      "questions_answered": [
+        "How do you get new ideas?",
+        "Where should you look for innovation opportunities?",
+        "What is the nature of knowledge growth?"
+      ],
+      "related_essay_ids": [
+        "ideas",
+        "newideas",
+        "startupideas",
+        "think"
+      ],
+      "target_audience": [
+        "entrepreneurs",
+        "researchers",
+        "innovators"
+      ],
+      "difficulty_level": "beginner",
+      "enriched_at": "2025-11-17T12:06:11.864303+00:00"
     },
     {
       "id": "goodtaste",
@@ -28,7 +96,42 @@
       "file": "essays/goodtaste.md",
       "word_count": 1099,
       "has_footnotes": false,
-      "scraped_at": "2025-11-17T11:30:34.903429Z"
+      "scraped_at": "2025-11-17T11:30:34.903429Z",
+      "summary": "Graham argues that good taste exists by showing that denying it leads to absurd conclusions—if there's no good taste, there can be no good art or skilled artists. He explains that while taste judgments are subjective and vary between people, art operates on human audiences who share common responses, making artistic quality a matter of degree rather than purely subjective or objective.",
+      "topics": [
+        "aesthetics",
+        "philosophy",
+        "art",
+        "subjectivity",
+        "taste",
+        "artistic-quality"
+      ],
+      "key_concepts": [
+        "reductio ad absurdum",
+        "partial order vs total order",
+        "art as operating on human audiences",
+        "objectivity-subjectivity spectrum",
+        "taste as measurable skill"
+      ],
+      "questions_answered": [
+        "Is there such a thing as good taste?",
+        "Why do people think good taste doesn't exist?",
+        "How can art quality be measured if responses are subjective?",
+        "What's the difference between popular art and good art?"
+      ],
+      "related_essay_ids": [
+        "genius",
+        "hackpaint",
+        "desres",
+        "taste"
+      ],
+      "target_audience": [
+        "artists",
+        "philosophers",
+        "general-readers"
+      ],
+      "difficulty_level": "intermediate",
+      "enriched_at": "2025-11-17T12:06:32.334149+00:00"
     },
     {
       "id": "orth",
@@ -2322,5 +2425,5 @@
     }
   ],
   "total_count": 232,
-  "last_updated": "2025-11-17T11:32:40.279674Z"
+  "last_updated": "2025-11-17T12:06:32.334182+00:00"
 }

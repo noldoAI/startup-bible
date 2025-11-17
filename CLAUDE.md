@@ -70,6 +70,16 @@ cd paul-graham
 python scraper.py --force
 ```
 
+**Enrich index with AI metadata (for chatbot retrieval):**
+```bash
+cd paul-graham
+# Test with 10 essays first
+python enrich_index.py --limit 10
+
+# Then process all essays
+python enrich_index.py
+```
+
 ## Data Format
 
 ### Individual Markdown Files
@@ -79,9 +89,18 @@ Each essay is saved as `paul-graham/data/essays/{essay-id}.md` with:
 - **Notes section**: Footnotes (if present)
 
 ### Index File
-`paul-graham/data/index.json` contains metadata for all essays:
-- `essays`: Array of essay metadata (id, title, date, url, file path, word_count, etc.)
-- `total_count`: Total number of essays
-- `last_updated`: Timestamp of last scrape
+`paul-graham/data/index.json` contains metadata for all essays.
 
-**Future extensibility**: The index can be enhanced with AI-generated summaries, topics, key_concepts, and related_essays for better LLM navigation.
+**Base metadata** (from scraper):
+- `id`, `title`, `date`, `url`, `file`, `word_count`, `has_footnotes`, `scraped_at`
+
+**Enriched metadata** (from AI enrichment, for chatbot retrieval):
+- `summary` - 2-3 sentence overview
+- `topics` - Array of topic tags
+- `key_concepts` - Main ideas and key terms
+- `questions_answered` - Questions this essay addresses
+- `target_audience` - Intended readers
+- `difficulty_level` - "beginner", "intermediate", or "advanced"
+- `enriched_at` - Timestamp of enrichment
+
+**Purpose**: Enriched metadata enables intelligent essay retrieval for conversational chatbots by providing semantic context and cross-references.

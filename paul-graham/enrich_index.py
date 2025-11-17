@@ -80,7 +80,7 @@ class IndexEnricher:
         # Check if all required metadata fields exist
         required_fields = [
             'summary', 'topics', 'key_concepts', 'questions_answered',
-            'related_essay_ids', 'target_audience', 'difficulty_level'
+            'target_audience', 'difficulty_level'
         ]
 
         return not all(field in essay for field in required_fields)
@@ -102,9 +102,8 @@ Read the essay and provide the following metadata:
 2. **topics**: Array of 3-6 topic tags (e.g., ["startups", "fundraising", "product-market-fit"])
 3. **key_concepts**: Array of 3-5 main ideas or key terms from the essay
 4. **questions_answered**: Array of 2-4 questions this essay addresses
-5. **related_essay_ids**: Array of 2-4 essay IDs (from the same author) that are thematically related (use essay filenames without .md)
-6. **target_audience**: Array of 1-3 audience types (e.g., ["founders", "investors", "programmers"])
-7. **difficulty_level**: One of "beginner", "intermediate", or "advanced"
+5. **target_audience**: Array of 1-3 audience types (e.g., ["founders", "investors", "programmers"])
+6. **difficulty_level**: One of "beginner", "intermediate", or "advanced"
 
 Return ONLY a JSON object with these exact keys. No additional text or explanation.
 
@@ -114,7 +113,6 @@ Example format:
   "topics": ["topic1", "topic2"],
   "key_concepts": ["concept1", "concept2"],
   "questions_answered": ["Question 1?", "Question 2?"],
-  "related_essay_ids": ["essay1", "essay2"],
   "target_audience": ["audience1", "audience2"],
   "difficulty_level": "intermediate"
 }}"""

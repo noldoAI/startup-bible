@@ -1,0 +1,8 @@
+# Flask web framework for the chatbot web interface
+Flask>=3.0.0
+
+# Optional: Enhanced CLI experience
+# Uncomment if you want better terminal features
+# prompt-toolkit>=3.0.0
+# rich>=13.0.0
+# colorama>=0.4.0

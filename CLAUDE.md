@@ -43,9 +43,22 @@ Contains a web scraper for Paul Graham's essays from paulgraham.com.
 
 **Key files:**
 - `scraper.py` - Main scraping script
+- `enrich_index.py` - AI metadata enrichment script
 - `requirements.txt` - Python dependencies (requests, beautifulsoup4, lxml)
 - `data/essays/` - Individual Markdown files for each essay
 - `data/index.json` - Metadata index for all essays
+- `README.md` - Detailed documentation
+
+### chatbot/
+Interactive chatbot with Web UI and CLI that uses Claude Code in headless mode.
+
+**Key files:**
+- `app.py` - Flask web server with REST API
+- `chatbot_cli.py` - Command-line interface
+- `templates/index.html` - Modern chat UI
+- `static/` - CSS and JavaScript for frontend
+- `requirements.txt` - Python dependencies (Flask)
+- `sessions/` - Persistent conversation storage
 - `README.md` - Detailed documentation
 
 ## Common Commands
@@ -79,6 +92,30 @@ python enrich_index.py --limit 10
 # Then process all essays
 python enrich_index.py
 ```
+
+### Chatbot
+
+**Start web interface:**
+```bash
+cd chatbot
+python app.py
+# Open http://127.0.0.1:5000 in browser
+```
+
+**Start CLI interface:**
+```bash
+cd chatbot
+python chatbot_cli.py
+
+# Or with specific model
+python chatbot_cli.py --model opus
+```
+
+**CLI commands:**
+- `/help` - Show available commands
+- `/history` - Display conversation history
+- `/clear` - Clear conversation history
+- `/quit` - Exit chatbot
 
 ## Data Format
 

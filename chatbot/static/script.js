@@ -244,6 +244,12 @@ async function sendMessage() {
 
 // Add Message to UI
 function addMessage(role, content, streaming = true, debug_info = null) {
+    // Add debug panel BEFORE the message for assistant messages
+    if (role === 'assistant' && debug_info) {
+        const debugPanel = createDebugPanel(debug_info);
+        chatContainer.appendChild(debugPanel);
+    }
+
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${role}`;
 
@@ -265,12 +271,6 @@ function addMessage(role, content, streaming = true, debug_info = null) {
     } else {
         // For assistant messages, add typing animation
         typeMessage(messageContent, content);
-    }
-
-    // Add debug panel for assistant messages if debug mode is enabled and debug_info is available
-    if (role === 'assistant' && debug_info) {
-        const debugPanel = createDebugPanel(debug_info);
-        chatContainer.appendChild(debugPanel);
     }
 }
 
@@ -829,22 +829,28 @@ function escapeHtml(text) {
 // Debug Panel Functions
 function createDebugPanel(debug_info) {
     const panel = document.createElement('div');
+    // Always show panel when debug mode is enabled, otherwise hide
     panel.className = isDebugMode ? 'debug-panel' : 'debug-panel hidden';
 
     // Header
     const header = document.createElement('div');
     header.className = 'debug-panel-header';
 
+    const headerLeft = document.createElement('div');
+    headerLeft.className = 'debug-panel-header-left';
+
     const title = document.createElement('div');
     title.className = 'debug-panel-title';
     title.textContent = 'Debug Info';
 
-    const toggle = document.createElement('div');
-    toggle.className = 'debug-panel-toggle';
-    toggle.textContent = '▼';
+    const preview = document.createElement('div');
+    preview.className = 'debug-panel-preview';
+    preview.textContent = `${debug_info.model} · ${debug_info.prompt_length} chars`;
 
-    header.appendChild(title);
-    header.appendChild(toggle);
+    headerLeft.appendChild(title);
+    headerLeft.appendChild(preview);
+
+    header.appendChild(headerLeft);
 
     // Content
     const content = document.createElement('div');
@@ -855,24 +861,47 @@ function createDebugPanel(debug_info) {
     metadata.className = 'debug-metadata';
 
     metadata.innerHTML = `
-        <div class="debug-metadata-item"><strong>Model:</strong> ${escapeHtml(debug_info.model)}</div>
-        <div class="debug-metadata-item"><strong>Prompt Length:</strong> ${debug_info.prompt_length} chars</div>
-        <div class="debug-metadata-item"><strong>History Messages:</strong> ${debug_info.history_messages_count}</div>
+        <div class="debug-metadata-item">
+            <strong>Model:</strong>
+            <span class="value">${escapeHtml(debug_info.model)}</span>
+        </div>
+        <div class="debug-metadata-item">
+            <strong>Prompt Length:</strong>
+            <span class="value">${debug_info.prompt_length} chars</span>
+        </div>
+        <div class="debug-metadata-item">
+            <strong>History:</strong>
+            <span class="value">${debug_info.history_messages_count} msgs</span>
+        </div>
     `;
 
-    // Prompt
+    // Prompt section
     const promptSection = document.createElement('div');
     promptSection.className = 'debug-prompt';
 
+    const promptHeader = document.createElement('div');
+    promptHeader.className = 'debug-prompt-header';
+
     const promptLabel = document.createElement('div');
     promptLabel.className = 'debug-prompt-label';
-    promptLabel.textContent = 'Full Prompt Sent to Claude:';
+    promptLabel.textContent = 'Full Prompt Sent to Claude';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'debug-copy-btn';
+    copyBtn.textContent = 'Copy';
+    copyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        copyPromptToClipboard(debug_info.prompt_sent, copyBtn);
+    });
+
+    promptHeader.appendChild(promptLabel);
+    promptHeader.appendChild(copyBtn);
 
     const promptContent = document.createElement('div');
     promptContent.className = 'debug-prompt-content';
-    promptContent.textContent = debug_info.prompt_sent;
+    promptContent.innerHTML = highlightPrompt(debug_info.prompt_sent);
 
-    promptSection.appendChild(promptLabel);
+    promptSection.appendChild(promptHeader);
     promptSection.appendChild(promptContent);
 
     content.appendChild(metadata);
@@ -881,12 +910,51 @@ function createDebugPanel(debug_info) {
     panel.appendChild(header);
     panel.appendChild(content);
 
-    // Add click handler to toggle expand/collapse
-    header.addEventListener('click', () => {
-        panel.classList.toggle('expanded');
+    return panel;
+}
+
+async function copyPromptToClipboard(text, button) {
+    try {
+        await navigator.clipboard.writeText(text);
+
+        // Update button state
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    } catch (error) {
+        console.error('Error copying to clipboard:', error);
+        button.textContent = 'Failed';
+        setTimeout(() => {
+            button.textContent = 'Copy';
+        }, 2000);
+    }
+}
+
+function highlightPrompt(promptText) {
+    // Escape HTML first
+    const lines = promptText.split('\n');
+    const highlightedLines = lines.map(line => {
+        // Highlight "User:" and "Assistant:" labels
+        if (line.match(/^(User|Assistant):/)) {
+            return line.replace(/^(User|Assistant):/, '<span class="prompt-role">$1:</span>');
+        }
+        // Highlight system prompt (first few lines before "Conversation history:")
+        else if (line.includes('You are a helpful AI assistant') ||
+                 line.includes('Respond to the user\'s message')) {
+            return `<span class="prompt-system">${escapeHtml(line)}</span>`;
+        }
+        // Regular content
+        else {
+            return escapeHtml(line);
+        }
     });
 
-    return panel;
+    return highlightedLines.join('\n');
 }
 
 function toggleDebugMode() {

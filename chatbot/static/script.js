@@ -316,6 +316,11 @@ async function sendMessage() {
             addMessage('assistant', data.response, true, data.debug_info);
             // Reload conversations to update title/metadata
             await loadConversations();
+
+            // Clear essay selection after successful send with context
+            if (selectedEssayIds.size > 0) {
+                clearEssaySelection();
+            }
         } else {
             // Show error
             addMessage('assistant', `Error: ${data.error || 'Unknown error occurred'}`);

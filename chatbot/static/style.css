@@ -735,6 +735,43 @@ body {
     justify-content: flex-end;
 }
 
+/* Share Modal */
+.share-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.share-link-input {
+    flex: 1;
+    padding: 10px 14px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #e5e5e5;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    outline: none;
+    user-select: all;
+}
+
+.share-link-input:focus {
+    border-color: #666;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+.copy-feedback {
+    display: none;
+    color: #4ade80;
+    font-size: 13px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.2s ease-in;
+}
+
+.copy-feedback.show {
+    display: block;
+}
+
 /* Empty State */
 .empty-state {
     text-align: center;

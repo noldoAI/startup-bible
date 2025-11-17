@@ -5,13 +5,14 @@ Flask-based chatbot web interface that uses Claude Code in headless mode.
 
 import argparse
 import json
+import secrets
 import subprocess
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from flask import Flask, render_template, request, jsonify, session, send_file
+from flask import Flask, render_template, request, jsonify, session, send_file, redirect
 import os
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ app.secret_key = 'your-secret-key-change-in-production'  # Change this in produc
 # Configuration
 SESSIONS_DIR = Path(__file__).parent / "sessions"
 SESSIONS_DIR.mkdir(exist_ok=True)
+SHARES_FILE = SESSIONS_DIR / "shares.json"
 CLAUDE_TIMEOUT = 60  # 1 minute timeout for Claude responses
 DEFAULT_MODEL = "sonnet"
 
@@ -65,9 +67,65 @@ def get_all_sessions() -> List[Dict]:
             print(f"Error loading session {session_file}: {e}")
             continue
 
-    # Sort by updated_at (most recent first)
-    sessions.sort(key=lambda x: x.get("updated_at", x.get("created_at", "")), reverse=True)
+    # Sort by updated_at (most recent first), handle None values
+    sessions.sort(key=lambda x: x.get("updated_at") or x.get("created_at") or "", reverse=True)
     return sessions
+
+
+def load_shares() -> Dict:
+    """Load the shares registry from file."""
+    if SHARES_FILE.exists():
+        try:
+            with open(SHARES_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading shares: {e}")
+            return {}
+    return {}
+
+
+def save_shares(shares: Dict):
+    """Save the shares registry to file."""
+    try:
+        with open(SHARES_FILE, 'w', encoding='utf-8') as f:
+            json.dump(shares, f, indent=2)
+    except Exception as e:
+        print(f"Error saving shares: {e}")
+
+
+def generate_share_token() -> str:
+    """Generate a secure random token for sharing."""
+    return secrets.token_urlsafe(32)
+
+
+def create_share_link(session_id: str) -> str:
+    """Create a shareable link for a conversation."""
+    shares = load_shares()
+
+    # Check if there's already a share token for this session
+    for token, data in shares.items():
+        if data.get("session_id") == session_id:
+            # Return existing token
+            return token
+
+    # Generate new token
+    token = generate_share_token()
+    shares[token] = {
+        "session_id": session_id,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "read_only": True
+    }
+    save_shares(shares)
+    return token
+
+
+def get_session_from_token(token: str) -> Optional[str]:
+    """Get session ID from share token."""
+    shares = load_shares()
+    share_data = shares.get(token)
+    if share_data:
+        return share_data.get("session_id")
+    return None
 
 
 class ConversationManager:
@@ -232,11 +290,42 @@ class ConversationManager:
 
 @app.route('/')
 def index():
-    """Serve the chat interface."""
-    # Initialize session ID if not exists
-    if 'session_id' not in session:
-        session['session_id'] = str(uuid.uuid4())
-    return render_template('index.html')
+    """Redirect to latest conversation or create new one."""
+    # Get all sessions and redirect to latest, or create new
+    sessions = get_all_sessions()
+
+    if sessions and len(sessions) > 0:
+        # Redirect to latest conversation
+        latest_id = sessions[0]['session_id']
+        return redirect(f'/c/{latest_id}')
+    else:
+        # Create new conversation
+        new_id = str(uuid.uuid4())
+        return redirect(f'/c/{new_id}')
+
+
+@app.route('/c/<session_id>')
+def chat_session(session_id):
+    """Serve the chat interface for a specific conversation."""
+    try:
+        # Validate session format (UUID)
+        try:
+            uuid.UUID(session_id)
+        except ValueError:
+            return render_template('error.html',
+                                 message="Invalid conversation ID"), 400
+
+        # Session file might not exist yet (for new conversations)
+        # That's OK - it will be created on first message
+
+        # Set Flask session for backward compatibility
+        session['session_id'] = session_id
+
+        # Return the chat template with session_id
+        return render_template('index.html', session_id=session_id)
+    except Exception as e:
+        return render_template('error.html',
+                             message=f"Error loading conversation: {str(e)}"), 500
 
 
 @app.route('/api/chat', methods=['POST'])
@@ -484,6 +573,53 @@ def search_conversations():
         return jsonify({"success": True, "results": results})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/conversations/<session_id>/share', methods=['POST'])
+def share_conversation(session_id):
+    """Create a shareable link for a conversation."""
+    try:
+        session_file = SESSIONS_DIR / f"{session_id}.json"
+        if not session_file.exists():
+            return jsonify({"success": False, "error": "Session not found"}), 404
+
+        # Generate share token
+        token = create_share_link(session_id)
+
+        # Return full URL
+        share_url = request.host_url.rstrip('/') + f'/share/{token}'
+
+        return jsonify({"success": True, "share_url": share_url, "token": token})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/share/<token>')
+def view_shared_conversation(token):
+    """View a shared conversation (read-only)."""
+    try:
+        # Get session ID from token
+        session_id = get_session_from_token(token)
+        if not session_id:
+            return render_template('error.html',
+                                 message="Invalid or expired share link"), 404
+
+        session_file = SESSIONS_DIR / f"{session_id}.json"
+        if not session_file.exists():
+            return render_template('error.html',
+                                 message="Conversation not found"), 404
+
+        # Load conversation data
+        with open(session_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Render read-only view
+        return render_template('shared.html',
+                             conversation=data,
+                             token=token)
+    except Exception as e:
+        return render_template('error.html',
+                             message=f"Error loading shared conversation: {str(e)}"), 500
 
 
 def main():

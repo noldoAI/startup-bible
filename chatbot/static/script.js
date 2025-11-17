@@ -20,6 +20,7 @@ const showArchivedCheckbox = document.getElementById('show-archived');
 const conversationTitle = document.getElementById('conversation-title');
 const editTitleBtn = document.getElementById('edit-title-btn');
 const exportBtn = document.getElementById('export-btn');
+const shareBtn = document.getElementById('share-btn');
 const archiveBtn = document.getElementById('archive-btn');
 const deleteBtn = document.getElementById('delete-btn');
 
@@ -30,6 +31,13 @@ const modalMessage = document.getElementById('modal-message');
 const modalCancel = document.getElementById('modal-cancel');
 const modalConfirm = document.getElementById('modal-confirm');
 
+// DOM Elements - Share Modal
+const shareModal = document.getElementById('share-modal');
+const shareLink = document.getElementById('share-link');
+const copyShareBtn = document.getElementById('copy-share-btn');
+const copyFeedback = document.getElementById('copy-feedback');
+const shareCloseBtn = document.getElementById('share-close-btn');
+
 // State
 let isProcessing = false;
 let currentSessionId = null;
@@ -37,7 +45,20 @@ let allConversations = [];
 let modalCallback = null;
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Extract session ID from URL or template
+    const appContainer = document.querySelector('.app-container');
+    const templateSessionId = appContainer?.dataset.sessionId;
+    const urlMatch = window.location.pathname.match(/^\/c\/([a-f0-9-]+)$/);
+    const urlSessionId = urlMatch ? urlMatch[1] : null;
+
+    const sessionId = templateSessionId || urlSessionId;
+
+    if (sessionId) {
+        currentSessionId = sessionId;
+        conversationTitle.dataset.sessionId = sessionId;
+    }
+
     loadConversations();
     loadHistory();
     setupEventListeners();
@@ -96,6 +117,9 @@ function setupEventListeners() {
     // Export conversation
     exportBtn.addEventListener('click', exportConversation);
 
+    // Share conversation
+    shareBtn.addEventListener('click', openShareModal);
+
     // Archive conversation
     archiveBtn.addEventListener('click', toggleArchiveConversation);
 
@@ -120,11 +144,32 @@ function setupEventListeners() {
         }
     });
 
+    // Share Modal
+    copyShareBtn.addEventListener('click', copyShareLink);
+    shareCloseBtn.addEventListener('click', hideShareModal);
+
+    // Click outside share modal to close
+    shareModal.addEventListener('click', (e) => {
+        if (e.target === shareModal) {
+            hideShareModal();
+        }
+    });
+
     // Click outside sidebar to close (mobile)
     document.addEventListener('click', (e) => {
         if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
             if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
                 sidebar.classList.remove('active');
+            }
+        }
+    });
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.sessionId) {
+            const urlMatch = window.location.pathname.match(/^\/c\/([a-f0-9-]+)$/);
+            if (urlMatch) {
+                switchConversation(urlMatch[1]);
             }
         }
     });
@@ -465,6 +510,16 @@ async function switchConversation(sessionId) {
                 sidebar.classList.remove('active');
             }
 
+            // Update URL without page reload
+            const newUrl = `/c/${sessionId}`;
+            if (window.location.pathname !== newUrl) {
+                window.history.pushState(
+                    { sessionId: sessionId },
+                    data.metadata.title || 'Claude Code Chatbot',
+                    newUrl
+                );
+            }
+
             userInput.focus();
         }
     } catch (error) {
@@ -476,52 +531,24 @@ async function switchConversation(sessionId) {
 // Create New Conversation
 async function createNewConversation() {
     try {
-        const response = await fetch('/api/conversations/new', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: modelSelect.value
-            })
-        });
+        // Generate new UUID
+        const newSessionId = generateUUID();
 
-        const data = await response.json();
-
-        if (data.success) {
-            currentSessionId = data.session_id;
-
-            // Clear chat
-            chatContainer.innerHTML = `
-                <div class="welcome-message">
-                    <h2>Welcome</h2>
-                    <p>Start a conversation with Claude Code. Ask me anything!</p>
-                </div>
-            `;
-
-            // Update title
-            conversationTitle.textContent = 'New Conversation';
-            conversationTitle.dataset.sessionId = data.session_id;
-            conversationTitle.dataset.archived = false;
-
-            // Update archive button
-            archiveBtn.textContent = 'Archive';
-            archiveBtn.title = 'Archive conversation';
-
-            // Reload conversations
-            await loadConversations();
-
-            // Close sidebar on mobile
-            if (window.innerWidth <= 768) {
-                sidebar.classList.remove('active');
-            }
-
-            userInput.focus();
-        }
+        // Redirect to new conversation URL (page will reload)
+        window.location.href = `/c/${newSessionId}`;
     } catch (error) {
         console.error('Error creating new conversation:', error);
         alert('Failed to create new conversation. Please try again.');
     }
+}
+
+// Generate UUID helper function
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
 }
 
 // Enable Title Edit
@@ -687,6 +714,58 @@ async function deleteConversationById(sessionId) {
             alert('Failed to delete conversation. Please try again.');
         }
     });
+}
+
+// Share Conversation Functions
+async function openShareModal() {
+    const sessionId = conversationTitle.dataset.sessionId;
+    if (!sessionId) {
+        alert('No active conversation to share.');
+        return;
+    }
+
+    try {
+        // Use current URL as the share link
+        const shareUrl = `${window.location.origin}/c/${sessionId}`;
+
+        // Populate share link input
+        shareLink.value = shareUrl;
+
+        // Show modal
+        shareModal.style.display = 'flex';
+
+        // Auto-select the link for easy copying
+        shareLink.select();
+    } catch (error) {
+        console.error('Error opening share modal:', error);
+        alert('Failed to open share modal. Please try again.');
+    }
+}
+
+function hideShareModal() {
+    shareModal.style.display = 'none';
+    copyFeedback.classList.remove('show');
+}
+
+async function copyShareLink() {
+    try {
+        // Copy to clipboard
+        await navigator.clipboard.writeText(shareLink.value);
+
+        // Show feedback
+        copyFeedback.classList.add('show');
+
+        // Hide feedback after 2 seconds
+        setTimeout(() => {
+            copyFeedback.classList.remove('show');
+        }, 2000);
+    } catch (error) {
+        console.error('Error copying to clipboard:', error);
+
+        // Fallback: Select the text for manual copy
+        shareLink.select();
+        alert('Please copy the link manually (Ctrl+C or Cmd+C)');
+    }
 }
 
 // Toggle Sidebar (Mobile)

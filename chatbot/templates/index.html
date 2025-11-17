@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container" data-session-id="{{ session_id if session_id else '' }}">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -61,6 +61,7 @@
                         </select>
                     </div>
                     <button id="export-btn" class="btn btn-icon" title="Export conversation">Export</button>
+                    <button id="share-btn" class="btn btn-icon" title="Share conversation">Share</button>
                     <button id="archive-btn" class="btn btn-icon" title="Archive conversation">Archive</button>
                     <button id="delete-btn" class="btn btn-icon" title="Delete conversation">Delete</button>
                     <button id="clear-btn" class="btn btn-secondary">Clear Chat</button>
@@ -101,6 +102,22 @@
             <div class="modal-actions">
                 <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
                 <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Share Conversation</h3>
+            <p>Anyone with this link can view this conversation:</p>
+            <div class="share-input-group">
+                <input type="text" id="share-link" class="share-link-input" readonly>
+                <button id="copy-share-btn" class="btn btn-primary">Copy</button>
+            </div>
+            <div id="copy-feedback" class="copy-feedback">Copied to clipboard!</div>
+            <div class="modal-actions">
+                <button id="share-close-btn" class="btn btn-secondary">Close</button>
             </div>
         </div>
     </div>

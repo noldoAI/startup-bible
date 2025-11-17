@@ -1,6 +1,6 @@
 # Paul Graham Essays
 
-This directory contains a web scraper for collecting Paul Graham's essays from [paulgraham.com](http://paulgraham.com) in LLM-ready JSONL format.
+This directory contains a web scraper for collecting Paul Graham's essays from [paulgraham.com](http://paulgraham.com) in LLM-ready Markdown format.
 
 ## Quick Start
 
@@ -24,7 +24,8 @@ This will:
 - Fetch the list of all essays from paulgraham.com/articles.html
 - Download each essay (200+ essays)
 - Extract title, date, content, and footnotes
-- Save to `data/essays.jsonl` (one essay per JSON line)
+- Save each essay as an individual Markdown file in `data/essays/`
+- Generate `data/index.json` with metadata for all essays
 - Use 200ms delay between requests (respectful scraping)
 - Take approximately 40-60 seconds total
 
@@ -37,9 +38,9 @@ python scraper.py
 ```
 
 The scraper automatically:
-- Loads existing `data/essays.jsonl`
+- Checks for existing `.md` files in `data/essays/`
 - Only scrapes essays that aren't already downloaded
-- Appends new essays to the file
+- Updates `index.json` with new entries
 
 ### Force Re-scrape
 
@@ -51,48 +52,93 @@ python scraper.py --force
 
 ## Output Format
 
-Essays are saved in JSONL format (one JSON object per line) at `data/essays.jsonl`.
+### Individual Markdown Files
 
-Each essay contains:
+Each essay is saved as `data/essays/{essay-id}.md` with YAML frontmatter:
+
+```markdown
+---
+id: greatwork
+title: How to Do Great Work
+date: 2023-07
+url: http://paulgraham.com/greatwork.html
+word_count: 8432
+has_footnotes: true
+scraped_at: 2025-11-17T15:30:00Z
+---
+
+# How to Do Great Work
+
+Essay content here...
+
+## Notes
+
+[1] Footnote text...
+```
+
+### Index File
+
+The `data/index.json` file contains metadata for all essays:
 
 ```json
 {
-  "id": "greatwork",
-  "title": "How to Do Great Work",
-  "url": "http://paulgraham.com/greatwork.html",
-  "date": "2023-07",
-  "content": "Full essay text...",
-  "footnotes": ["Footnote 1", "Footnote 2"],
-  "word_count": 8432,
-  "scraped_at": "2025-11-17T15:30:00Z"
+  "essays": [
+    {
+      "id": "greatwork",
+      "title": "How to Do Great Work",
+      "date": "2023-07",
+      "url": "http://paulgraham.com/greatwork.html",
+      "file": "essays/greatwork.md",
+      "word_count": 8432,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T15:30:00Z"
+    }
+  ],
+  "total_count": 218,
+  "last_updated": "2025-11-17T15:30:00Z"
 }
 ```
 
+**Future extensibility**: The index can be enhanced with:
+- `summary`: AI-generated essay summaries
+- `topics`: Categorization tags
+- `key_concepts`: Main ideas
+- `related_essays`: Cross-references
+
 ### Loading the Data
 
-**Python:**
+**Read index:**
 ```python
 import json
 
-essays = []
-with open('data/essays.jsonl', 'r') as f:
-    for line in f:
-        essays.append(json.loads(line))
+with open('data/index.json', 'r') as f:
+    index = json.load(f)
 
-print(f"Loaded {len(essays)} essays")
+print(f"Total essays: {index['total_count']}")
+for essay in index['essays'][:5]:
+    print(f"- {essay['title']} ({essay['date']})")
 ```
 
-**Command line (view first essay):**
+**Read individual essay:**
+```python
+with open('data/essays/greatwork.md', 'r') as f:
+    content = f.read()
+print(content)
+```
+
+**Command line (view essay list):**
 ```bash
-head -n 1 data/essays.jsonl | python -m json.tool
+python -m json.tool data/index.json | grep title
 ```
 
 ## Features
 
+- **Individual Markdown files**: Each essay saved separately for easy LLM consumption
+- **Metadata index**: Quick navigation via index.json
 - **Incremental updates**: Only scrapes new essays on subsequent runs
 - **Respectful scraping**: 200ms delay between requests
 - **Clean text extraction**: Removes HTML, scripts, navigation elements
-- **Metadata extraction**: Dates, word counts, footnotes
+- **YAML frontmatter**: Structured metadata in each file
 - **Error handling**: Continues on failures, reports at end
 - **Progress tracking**: Shows scraping progress in real-time
 

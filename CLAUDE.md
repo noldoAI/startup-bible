@@ -44,7 +44,8 @@ Contains a web scraper for Paul Graham's essays from paulgraham.com.
 **Key files:**
 - `scraper.py` - Main scraping script
 - `requirements.txt` - Python dependencies (requests, beautifulsoup4, lxml)
-- `data/essays.jsonl` - Output file with scraped essays (JSONL format)
+- `data/essays/` - Individual Markdown files for each essay
+- `data/index.json` - Metadata index for all essays
 - `README.md` - Detailed documentation
 
 ## Common Commands
@@ -59,7 +60,8 @@ python scraper.py
 
 This automatically:
 - Downloads only new essays (if run previously)
-- Saves to `data/essays.jsonl` (one essay per line)
+- Saves each essay as individual Markdown file in `data/essays/`
+- Updates `data/index.json` with metadata
 - Uses respectful 200ms delay between requests
 
 **Force re-scrape all essays:**
@@ -70,12 +72,16 @@ python scraper.py --force
 
 ## Data Format
 
-Essays are stored in JSONL format where each line is a JSON object containing:
-- `id`: Essay identifier (filename without .html)
-- `title`: Essay title
-- `url`: Source URL
-- `date`: Publication date (YYYY-MM format)
-- `content`: Full essay text (cleaned, no HTML)
-- `footnotes`: Array of footnote texts
-- `word_count`: Number of words
-- `scraped_at`: Timestamp of scraping
+### Individual Markdown Files
+Each essay is saved as `paul-graham/data/essays/{essay-id}.md` with:
+- **YAML frontmatter**: Contains id, title, date, url, word_count, has_footnotes, scraped_at
+- **Main content**: Essay text with proper formatting
+- **Notes section**: Footnotes (if present)
+
+### Index File
+`paul-graham/data/index.json` contains metadata for all essays:
+- `essays`: Array of essay metadata (id, title, date, url, file path, word_count, etc.)
+- `total_count`: Total number of essays
+- `last_updated`: Timestamp of last scrape
+
+**Future extensibility**: The index can be enhanced with AI-generated summaries, topics, key_concepts, and related_essays for better LLM navigation.

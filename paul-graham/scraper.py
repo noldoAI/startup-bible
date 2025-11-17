@@ -2,7 +2,7 @@
 """
 Paul Graham Essay Scraper
 
-Scrapes essays from paulgraham.com and saves them in LLM-ready JSONL format.
+Scrapes essays from paulgraham.com and saves them as individual Markdown files.
 Supports incremental updates to avoid re-scraping existing essays.
 """
 
@@ -10,6 +10,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import sys
 import time
 from datetime import datetime
@@ -25,7 +26,8 @@ from bs4 import BeautifulSoup
 BASE_URL = "http://paulgraham.com"
 ARTICLES_URL = f"{BASE_URL}/articles.html"
 DATA_DIR = Path(__file__).parent / "data"
-OUTPUT_FILE = DATA_DIR / "essays.jsonl"
+ESSAYS_DIR = DATA_DIR / "essays"
+INDEX_FILE = DATA_DIR / "index.json"
 REQUEST_DELAY = 0.2  # 200ms between requests
 TIMEOUT = 30  # Request timeout in seconds
 
@@ -39,17 +41,25 @@ class EssayScraper:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (compatible; PaulGrahamScraper/1.0)'
         })
-        self.existing_essays: Dict[str, dict] = {}
+        self.existing_essays: Set[str] = set()
+        self.all_essays: List[dict] = []
 
     def load_existing_essays(self) -> None:
-        """Load previously scraped essays from JSONL file."""
-        if not self.force_rescrape and OUTPUT_FILE.exists():
-            print(f"Loading existing essays from {OUTPUT_FILE}")
-            with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
-                for line in f:
-                    essay = json.loads(line.strip())
-                    self.existing_essays[essay['id']] = essay
-            print(f"Found {len(self.existing_essays)} existing essays")
+        """Load previously scraped essays by checking for .md files."""
+        if not self.force_rescrape and ESSAYS_DIR.exists():
+            md_files = list(ESSAYS_DIR.glob("*.md"))
+            for md_file in md_files:
+                essay_id = md_file.stem  # filename without extension
+                self.existing_essays.add(essay_id)
+
+            if self.existing_essays:
+                print(f"Found {len(self.existing_essays)} existing essays")
+
+        # Also load index.json if it exists
+        if INDEX_FILE.exists():
+            with open(INDEX_FILE, 'r', encoding='utf-8') as f:
+                index_data = json.load(f)
+                self.all_essays = index_data.get('essays', [])
 
     def fetch_page(self, url: str) -> Optional[BeautifulSoup]:
         """Fetch and parse a page."""
@@ -106,49 +116,67 @@ class EssayScraper:
     def extract_content(self, soup: BeautifulSoup) -> Dict[str, any]:
         """Extract essay content, footnotes, and other metadata."""
         # Remove script and style elements
-        for element in soup(['script', 'style', 'img']):
+        for element in soup(['script', 'style', 'img', 'map', 'area']):
             element.decompose()
 
-        # Get all text
-        all_text = soup.get_text()
+        # Paul Graham's essays use <font> tags with <br><br> for paragraphs
+        # Find the main font tag containing the essay
+        font_tag = soup.find('font', {'size': '2', 'face': 'verdana'})
 
-        # Split into lines and clean
-        lines = [line.strip() for line in all_text.split('\n') if line.strip()]
+        if not font_tag:
+            # Fallback: try to find any font tag
+            font_tag = soup.find('font')
 
-        # Try to identify where main content starts and ends
-        # Usually starts after the date, ends before "Notes" or extensive whitespace
-        content_lines = []
-        in_content = False
+        if not font_tag:
+            # Last resort: use the whole body
+            font_tag = soup.find('body')
+
+        if not font_tag:
+            return {'content': '', 'footnotes': [], 'word_count': 0}
+
+        # Get HTML content and split by <br><br> or <br /><br />
+        html_content = str(font_tag)
+
+        # Replace various br combinations with a marker
+        html_content = re.sub(r'<br\s*/?>\s*<br\s*/?>', '\n\n||PARAGRAPH||\n\n', html_content, flags=re.IGNORECASE)
+
+        # Parse the modified HTML
+        temp_soup = BeautifulSoup(html_content, 'lxml')
+
+        # Get text and split on our marker
+        text = temp_soup.get_text()
+        paragraphs = [p.strip() for p in text.split('||PARAGRAPH||') if p.strip()]
+
+        content_paras = []
         footnotes = []
         in_footnotes = False
+        started_content = False
 
-        for i, line in enumerate(lines):
-            # Skip very short lines at the start (likely navigation)
-            if not in_content and len(line) < 10:
+        for para in paragraphs:
+            if not para:
                 continue
 
             # Look for "Notes" section
-            if line.lower() == 'notes':
+            if para.lower().strip() == 'notes':
                 in_footnotes = True
-                in_content = False
                 continue
 
             # Look for "Thanks" section (usually at the end)
-            if line.lower().startswith('thanks to'):
+            if para.lower().startswith('thanks to'):
                 break
 
             if in_footnotes:
-                footnotes.append(line)
-            elif not in_content:
-                # Start content after we find a substantial paragraph
-                if len(line) > 50:
-                    in_content = True
-                    content_lines.append(line)
+                footnotes.append(para)
             else:
-                content_lines.append(line)
+                # Skip very short paragraphs at the start (likely navigation)
+                if not started_content and len(para) < 20:
+                    continue
+
+                started_content = True
+                content_paras.append(para)
 
         # Join paragraphs with double newlines
-        content = '\n\n'.join(content_lines)
+        content = '\n\n'.join(content_paras)
 
         # Calculate word count
         word_count = len(content.split())
@@ -192,14 +220,74 @@ class EssayScraper:
         return essay
 
     def save_essay(self, essay: dict) -> None:
-        """Append essay to JSONL file."""
+        """Save essay as individual Markdown file with YAML frontmatter."""
+        # Ensure essays directory exists
+        ESSAYS_DIR.mkdir(parents=True, exist_ok=True)
+
+        # Build Markdown content with YAML frontmatter
+        md_content = f"""---
+id: {essay['id']}
+title: {essay['title']}
+date: {essay['date'] or 'unknown'}
+url: {essay['url']}
+word_count: {essay['word_count']}
+has_footnotes: {len(essay['footnotes']) > 0}
+scraped_at: {essay['scraped_at']}
+---
+
+# {essay['title']}
+
+{essay['content']}
+"""
+
+        # Add footnotes section if present
+        if essay['footnotes']:
+            md_content += "\n\n## Notes\n\n"
+            for i, footnote in enumerate(essay['footnotes'], 1):
+                md_content += f"[{i}] {footnote}\n\n"
+
+        # Write to file
+        essay_file = ESSAYS_DIR / f"{essay['id']}.md"
+        with open(essay_file, 'w', encoding='utf-8') as f:
+            f.write(md_content)
+
+        # Add to all_essays list for index
+        essay_metadata = {
+            'id': essay['id'],
+            'title': essay['title'],
+            'date': essay['date'],
+            'url': essay['url'],
+            'file': f"essays/{essay['id']}.md",
+            'word_count': essay['word_count'],
+            'has_footnotes': len(essay['footnotes']) > 0,
+            'scraped_at': essay['scraped_at']
+        }
+        self.all_essays.append(essay_metadata)
+
+    def create_index(self) -> None:
+        """Create or update index.json with essay metadata."""
+        # Sort essays by date (most recent first), then by title
+        sorted_essays = sorted(
+            self.all_essays,
+            key=lambda e: (e['date'] or '0000-00', e['title']),
+            reverse=True
+        )
+
+        index_data = {
+            'essays': sorted_essays,
+            'total_count': len(sorted_essays),
+            'last_updated': datetime.utcnow().isoformat() + 'Z'
+        }
+
         # Ensure data directory exists
         DATA_DIR.mkdir(exist_ok=True)
 
-        # Append to file
-        with open(OUTPUT_FILE, 'a', encoding='utf-8') as f:
-            json.dump(essay, f, ensure_ascii=False)
-            f.write('\n')
+        # Write index file
+        with open(INDEX_FILE, 'w', encoding='utf-8') as f:
+            json.dump(index_data, f, ensure_ascii=False, indent=2)
+
+        print(f"\nIndex updated: {INDEX_FILE}")
+        print(f"Total essays in index: {len(sorted_essays)}")
 
     def run(self) -> None:
         """Run the scraper."""
@@ -221,12 +309,17 @@ class EssayScraper:
             essays = new_essays
         else:
             print(f"\nForce re-scraping all {len(essays)} essays")
-            # Clear output file if force re-scraping
-            if OUTPUT_FILE.exists():
-                OUTPUT_FILE.unlink()
+            # Clear essays directory if force re-scraping
+            if ESSAYS_DIR.exists():
+                shutil.rmtree(ESSAYS_DIR)
+            # Clear existing data
+            self.all_essays = []
 
         if not essays:
             print("No new essays to scrape!")
+            # Still create/update index if we have existing essays
+            if self.all_essays:
+                self.create_index()
             return
 
         # Scrape each essay
@@ -251,19 +344,23 @@ class EssayScraper:
             if i < len(essays):
                 time.sleep(REQUEST_DELAY)
 
+        # Create/update index
+        self.create_index()
+
         # Summary
         print("\n" + "=" * 60)
         print(f"Scraping complete!")
         print(f"Successfully scraped: {scraped_count}")
         print(f"Failed: {failed_count}")
-        print(f"Output saved to: {OUTPUT_FILE}")
+        print(f"Essays saved to: {ESSAYS_DIR}")
+        print(f"Index saved to: {INDEX_FILE}")
         print("=" * 60)
 
 
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Scrape Paul Graham essays and save to JSONL format'
+        description='Scrape Paul Graham essays and save as individual Markdown files'
     )
     parser.add_argument(
         '--force',

@@ -25,11 +25,12 @@ python scraper.py
 
 ### Paul Graham Essays
 
-A web scraper that collects all 200+ essays from [paulgraham.com](http://paulgraham.com) in LLM-ready JSONL format.
+A web scraper that collects all 200+ essays from [paulgraham.com](http://paulgraham.com) in LLM-ready Markdown format.
 
 - **Location**: `paul-graham/`
-- **Output**: `paul-graham/data/essays.jsonl`
-- **Features**: Incremental updates, clean text extraction, metadata enrichment
+- **Output**: Individual `.md` files in `paul-graham/data/essays/`
+- **Index**: `paul-graham/data/index.json` with metadata for all essays
+- **Features**: Incremental updates, clean text extraction, YAML frontmatter, metadata index
 
 See [paul-graham/README.md](paul-graham/README.md) for detailed usage.
 

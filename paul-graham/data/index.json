@@ -1,0 +1,2326 @@
+{
+  "essays": [
+    {
+      "id": "google",
+      "title": "How to Start Google",
+      "date": "2024-03",
+      "url": "http://paulgraham.com/google.html",
+      "file": "essays/google.md",
+      "word_count": 2618,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:28.557810Z"
+    },
+    {
+      "id": "getideas",
+      "title": "How to Get New Ideas",
+      "date": "2023-01",
+      "url": "http://paulgraham.com/getideas.html",
+      "file": "essays/getideas.md",
+      "word_count": 145,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:31.007134Z"
+    },
+    {
+      "id": "goodtaste",
+      "title": "Is There Such a Thing as Good Taste?",
+      "date": "2021-11",
+      "url": "http://paulgraham.com/goodtaste.html",
+      "file": "essays/goodtaste.md",
+      "word_count": 1099,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:34.903429Z"
+    },
+    {
+      "id": "orth",
+      "title": "Orthodox Privilege",
+      "date": "2020-07",
+      "url": "http://paulgraham.com/orth.html",
+      "file": "essays/orth.md",
+      "word_count": 620,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:45.982822Z"
+    },
+    {
+      "id": "fh",
+      "title": "Haters",
+      "date": "2020-01",
+      "url": "http://paulgraham.com/fh.html",
+      "file": "essays/fh.md",
+      "word_count": 1143,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:48.220722Z"
+    },
+    {
+      "id": "lesson",
+      "title": "The Lesson to Unlearn",
+      "date": "2019-12",
+      "url": "http://paulgraham.com/lesson.html",
+      "file": "essays/lesson.md",
+      "word_count": 3448,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:50.402591Z"
+    },
+    {
+      "id": "pgh",
+      "title": "How to Make Pittsburgh a Startup Hub",
+      "date": "2016-04",
+      "url": "http://paulgraham.com/pgh.html",
+      "file": "essays/pgh.md",
+      "word_count": 2610,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:53.853330Z"
+    },
+    {
+      "id": "before",
+      "title": "Before the Startup",
+      "date": "2014-10",
+      "url": "http://paulgraham.com/before.html",
+      "file": "essays/before.md",
+      "word_count": 4144,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:04.796796Z"
+    },
+    {
+      "id": "invtrend",
+      "title": "Startup Investing Trends",
+      "date": "2013-06",
+      "url": "http://paulgraham.com/invtrend.html",
+      "file": "essays/invtrend.md",
+      "word_count": 2510,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:07.952923Z"
+    },
+    {
+      "id": "founders",
+      "title": "What We Look for in Founders",
+      "date": "2010-10",
+      "url": "http://paulgraham.com/founders.html",
+      "file": "essays/founders.md",
+      "word_count": 785,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:18.371550Z"
+    },
+    {
+      "id": "really",
+      "title": "What Startups Are Really Like",
+      "date": "2009-10",
+      "url": "http://paulgraham.com/really.html",
+      "file": "essays/really.md",
+      "word_count": 4843,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:24.851992Z"
+    },
+    {
+      "id": "angelinvesting",
+      "title": "How to Be an Angel Investor",
+      "date": "2009-03",
+      "url": "http://paulgraham.com/angelinvesting.html",
+      "file": "essays/angelinvesting.md",
+      "word_count": 2949,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:32.944221Z"
+    },
+    {
+      "id": "divergence",
+      "title": "Could VC be a Casualty of the Recession?",
+      "date": "2008-12",
+      "url": "http://paulgraham.com/divergence.html",
+      "file": "essays/divergence.md",
+      "word_count": 1327,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:36.950741Z"
+    },
+    {
+      "id": "cities",
+      "title": "Cities and Ambition",
+      "date": "2008-05",
+      "url": "http://paulgraham.com/cities.html",
+      "file": "essays/cities.md",
+      "word_count": 229,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:40.484339Z"
+    },
+    {
+      "id": "good",
+      "title": "Be Good",
+      "date": "2008-04",
+      "url": "http://paulgraham.com/good.html",
+      "file": "essays/good.md",
+      "word_count": 2603,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:42.308166Z"
+    },
+    {
+      "id": "boss",
+      "title": "You Weren't Meant to Have a Boss",
+      "date": "2008-03",
+      "url": "http://paulgraham.com/boss.html",
+      "file": "essays/boss.md",
+      "word_count": 2375,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:44.772326Z"
+    },
+    {
+      "id": "ycombinator",
+      "title": "A New Venture Animal",
+      "date": "2008-03",
+      "url": "http://paulgraham.com/ycombinator.html",
+      "file": "essays/ycombinator.md",
+      "word_count": 1968,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:45.302682Z"
+    },
+    {
+      "id": "webstartups",
+      "title": "The Future of Web Startups",
+      "date": "2007-10",
+      "url": "http://paulgraham.com/webstartups.html",
+      "file": "essays/webstartups.md",
+      "word_count": 3381,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:47.512269Z"
+    },
+    {
+      "id": "die",
+      "title": "How Not to Die",
+      "date": "2007-08",
+      "url": "http://paulgraham.com/die.html",
+      "file": "essays/die.md",
+      "word_count": 1973,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:49.314833Z"
+    },
+    {
+      "id": "guidetoinvestors",
+      "title": "The Hacker's Guide to Investors",
+      "date": "2007-04",
+      "url": "http://paulgraham.com/guidetoinvestors.html",
+      "file": "essays/guidetoinvestors.md",
+      "word_count": 6058,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:52.344463Z"
+    },
+    {
+      "id": "notnot",
+      "title": "Why to Not Not Start a Startup",
+      "date": "2007-03",
+      "url": "http://paulgraham.com/notnot.html",
+      "file": "essays/notnot.md",
+      "word_count": 6118,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:54.242198Z"
+    },
+    {
+      "id": "hackernews",
+      "title": "What I've Learned from Hacker News",
+      "date": "2007-02",
+      "url": "http://paulgraham.com/hackernews.html",
+      "file": "essays/hackernews.md",
+      "word_count": 2355,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:34.710644Z"
+    },
+    {
+      "id": "foundersatwork",
+      "title": "Learning from Founders",
+      "date": "2007-01",
+      "url": "http://paulgraham.com/foundersatwork.html",
+      "file": "essays/foundersatwork.md",
+      "word_count": 773,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:55.345634Z"
+    },
+    {
+      "id": "mit",
+      "title": "A Student's Guide to Startups",
+      "date": "2006-10",
+      "url": "http://paulgraham.com/mit.html",
+      "file": "essays/mit.md",
+      "word_count": 6206,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:57.362075Z"
+    },
+    {
+      "id": "investors",
+      "title": "How to Present to Investors",
+      "date": "2006-08",
+      "url": "http://paulgraham.com/investors.html",
+      "file": "essays/investors.md",
+      "word_count": 2817,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:57.930705Z"
+    },
+    {
+      "id": "copy",
+      "title": "Copy What You Like",
+      "date": "2006-07",
+      "url": "http://paulgraham.com/copy.html",
+      "file": "essays/copy.md",
+      "word_count": 928,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:58.456468Z"
+    },
+    {
+      "id": "marginal",
+      "title": "The Power of the Marginal",
+      "date": "2006-06",
+      "url": "http://paulgraham.com/marginal.html",
+      "file": "essays/marginal.md",
+      "word_count": 5744,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:59.750957Z"
+    },
+    {
+      "id": "america",
+      "title": "Why Startups Condense in America",
+      "date": "2006-05",
+      "url": "http://paulgraham.com/america.html",
+      "file": "essays/america.md",
+      "word_count": 4327,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:00.470438Z"
+    },
+    {
+      "id": "siliconvalley",
+      "title": "How to Be Silicon Valley",
+      "date": "2006-05",
+      "url": "http://paulgraham.com/siliconvalley.html",
+      "file": "essays/siliconvalley.md",
+      "word_count": 3258,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:01.155685Z"
+    },
+    {
+      "id": "startuplessons",
+      "title": "The Hardest Lessons for Startups to Learn",
+      "date": "2006-04",
+      "url": "http://paulgraham.com/startuplessons.html",
+      "file": "essays/startuplessons.md",
+      "word_count": 4424,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:01.861818Z"
+    },
+    {
+      "id": "randomness",
+      "title": "See Randomness",
+      "date": "2006-04",
+      "url": "http://paulgraham.com/randomness.html",
+      "file": "essays/randomness.md",
+      "word_count": 587,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:02.394277Z"
+    },
+    {
+      "id": "whyyc",
+      "title": "Why YC",
+      "date": "2006-03",
+      "url": "http://paulgraham.com/whyyc.html",
+      "file": "essays/whyyc.md",
+      "word_count": 376,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:04.199731Z"
+    },
+    {
+      "id": "softwarepatents",
+      "title": "Are Software Patents Evil?",
+      "date": "2006-03",
+      "url": "http://paulgraham.com/softwarepatents.html",
+      "file": "essays/softwarepatents.md",
+      "word_count": 4299,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:03.094585Z"
+    },
+    {
+      "id": "6631327",
+      "title": "6,631,372",
+      "date": "2006-03",
+      "url": "http://paulgraham.com/6631327.html",
+      "file": "essays/6631327.md",
+      "word_count": 692,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:03.660361Z"
+    },
+    {
+      "id": "startupfunding",
+      "title": "How to Fund a Startup",
+      "date": "2005-11",
+      "url": "http://paulgraham.com/startupfunding.html",
+      "file": "essays/startupfunding.md",
+      "word_count": 8174,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:06.668556Z"
+    },
+    {
+      "id": "ideas",
+      "title": "Ideas for Startups",
+      "date": "2005-10",
+      "url": "http://paulgraham.com/ideas.html",
+      "file": "essays/ideas.md",
+      "word_count": 3843,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:07.730329Z"
+    },
+    {
+      "id": "opensource",
+      "title": "What Business Can Learn from Open Source",
+      "date": "2005-08",
+      "url": "http://paulgraham.com/opensource.html",
+      "file": "essays/opensource.md",
+      "word_count": 4173,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:10.217381Z"
+    },
+    {
+      "id": "inequality",
+      "title": "Inequality and Risk",
+      "date": "2005-08",
+      "url": "http://paulgraham.com/inequality.html",
+      "file": "essays/inequality.md",
+      "word_count": 2555,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:08.856710Z"
+    },
+    {
+      "id": "hiring",
+      "title": "Hiring is Obsolete",
+      "date": "2005-05",
+      "url": "http://paulgraham.com/hiring.html",
+      "file": "essays/hiring.md",
+      "word_count": 4674,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:11.020351Z"
+    },
+    {
+      "id": "submarine",
+      "title": "The Submarine",
+      "date": "2005-04",
+      "url": "http://paulgraham.com/submarine.html",
+      "file": "essays/submarine.md",
+      "word_count": 2008,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:11.579884Z"
+    },
+    {
+      "id": "writing44",
+      "title": "Writing,  Briefly",
+      "date": "2005-03",
+      "url": "http://paulgraham.com/writing44.html",
+      "file": "essays/writing44.md",
+      "word_count": 457,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:13.429235Z"
+    },
+    {
+      "id": "college",
+      "title": "Undergraduation",
+      "date": "2005-03",
+      "url": "http://paulgraham.com/college.html",
+      "file": "essays/college.md",
+      "word_count": 3149,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:14.136625Z"
+    },
+    {
+      "id": "start",
+      "title": "How to Start a Startup",
+      "date": "2005-03",
+      "url": "http://paulgraham.com/start.html",
+      "file": "essays/start.md",
+      "word_count": 9343,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:15.468914Z"
+    },
+    {
+      "id": "hs",
+      "title": "What You'll Wish You'd Known",
+      "date": "2005-01",
+      "url": "http://paulgraham.com/hs.html",
+      "file": "essays/hs.md",
+      "word_count": 4162,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:16.182553Z"
+    },
+    {
+      "id": "usa",
+      "title": "Made in USA",
+      "date": "2004-11",
+      "url": "http://paulgraham.com/usa.html",
+      "file": "essays/usa.md",
+      "word_count": 1768,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:16.728162Z"
+    },
+    {
+      "id": "charisma",
+      "title": "It's Charisma, Stupid",
+      "date": "2004-11",
+      "url": "http://paulgraham.com/charisma.html",
+      "file": "essays/charisma.md",
+      "word_count": 1263,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:17.260450Z"
+    },
+    {
+      "id": "polls",
+      "title": "Bradley's Ghost",
+      "date": "2004-11",
+      "url": "http://paulgraham.com/polls.html",
+      "file": "essays/polls.md",
+      "word_count": 616,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:17.916642Z"
+    },
+    {
+      "id": "laundry",
+      "title": "A Version 1.0",
+      "date": "2004-10",
+      "url": "http://paulgraham.com/laundry.html",
+      "file": "essays/laundry.md",
+      "word_count": 4157,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:18.680717Z"
+    },
+    {
+      "id": "bubble",
+      "title": "What the Bubble Got Right",
+      "date": "2004-09",
+      "url": "http://paulgraham.com/bubble.html",
+      "file": "essays/bubble.md",
+      "word_count": 3583,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:19.213709Z"
+    },
+    {
+      "id": "gh",
+      "title": "Great Hackers",
+      "date": "2004-07",
+      "url": "http://paulgraham.com/gh.html",
+      "file": "essays/gh.md",
+      "word_count": 4861,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:21.240234Z"
+    },
+    {
+      "id": "wealth",
+      "title": "How to Make Wealth",
+      "date": "2004-05",
+      "url": "http://paulgraham.com/wealth.html",
+      "file": "essays/wealth.md",
+      "word_count": 7931,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:22.682835Z"
+    },
+    {
+      "id": "say",
+      "title": "What You Can't Say",
+      "date": "2004-01",
+      "url": "http://paulgraham.com/say.html",
+      "file": "essays/say.md",
+      "word_count": 5352,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:23.901087Z"
+    },
+    {
+      "id": "ffb",
+      "title": "Filters that Fight Back",
+      "date": "2003-08",
+      "url": "http://paulgraham.com/ffb.html",
+      "file": "essays/ffb.md",
+      "word_count": 633,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:24.443992Z"
+    },
+    {
+      "id": "hp",
+      "title": "Hackers and Painters",
+      "date": "2003-05",
+      "url": "http://paulgraham.com/hp.html",
+      "file": "essays/hp.md",
+      "word_count": 5209,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:25.239787Z"
+    },
+    {
+      "id": "hundred",
+      "title": "The Hundred-Year Language",
+      "date": "2003-04",
+      "url": "http://paulgraham.com/hundred.html",
+      "file": "essays/hundred.md",
+      "word_count": 4707,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:26.352515Z"
+    },
+    {
+      "id": "desres",
+      "title": "Design and Research",
+      "date": "2003-01",
+      "url": "http://paulgraham.com/desres.html",
+      "file": "essays/desres.md",
+      "word_count": 2659,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:28.162924Z"
+    },
+    {
+      "id": "better",
+      "title": "Better Bayesian Filtering",
+      "date": "2003-01",
+      "url": "http://paulgraham.com/better.html",
+      "file": "essays/better.md",
+      "word_count": 3430,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:27.575808Z"
+    },
+    {
+      "id": "spam",
+      "title": "A Plan for Spam",
+      "date": "2002-08",
+      "url": "http://paulgraham.com/spam.html",
+      "file": "essays/spam.md",
+      "word_count": 105,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:28.853409Z"
+    },
+    {
+      "id": "power",
+      "title": "Succinctness is Power",
+      "date": "2002-05",
+      "url": "http://paulgraham.com/power.html",
+      "file": "essays/power.md",
+      "word_count": 2994,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:30.083878Z"
+    },
+    {
+      "id": "icad",
+      "title": "Revenge of the Nerds",
+      "date": "2002-05",
+      "url": "http://paulgraham.com/icad.html",
+      "file": "essays/icad.md",
+      "word_count": 5521,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:29.541167Z"
+    },
+    {
+      "id": "taste",
+      "title": "Taste for Makers",
+      "date": "2002-02",
+      "url": "http://paulgraham.com/taste.html",
+      "file": "essays/taste.md",
+      "word_count": 4286,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:31.339111Z"
+    },
+    {
+      "id": "diff",
+      "title": "What Made Lisp Different",
+      "date": "2001-12",
+      "url": "http://paulgraham.com/diff.html",
+      "file": "essays/diff.md",
+      "word_count": 700,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:32.989203Z"
+    },
+    {
+      "id": "road",
+      "title": "The Other Road Ahead",
+      "date": "2001-09",
+      "url": "http://paulgraham.com/road.html",
+      "file": "essays/road.md",
+      "word_count": 10793,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:34.065302Z"
+    },
+    {
+      "id": "rootsoflisp",
+      "title": "The Roots of Lisp",
+      "date": "2001-05",
+      "url": "http://paulgraham.com/rootsoflisp.html",
+      "file": "essays/rootsoflisp.md",
+      "word_count": 358,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:34.860678Z"
+    },
+    {
+      "id": "langdes",
+      "title": "Five Questions about Language Design",
+      "date": "2001-05",
+      "url": "http://paulgraham.com/langdes.html",
+      "file": "essays/langdes.md",
+      "word_count": 2941,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:35.666895Z"
+    },
+    {
+      "id": "popular",
+      "title": "Being Popular",
+      "date": "2001-05",
+      "url": "http://paulgraham.com/popular.html",
+      "file": "essays/popular.md",
+      "word_count": 7369,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:36.666365Z"
+    },
+    {
+      "id": "lwba",
+      "title": "Lisp for Web-Based Applications",
+      "date": "2001-04",
+      "url": "http://paulgraham.com/lwba.html",
+      "file": "essays/lwba.md",
+      "word_count": 54,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:38.517196Z"
+    },
+    {
+      "id": "avg",
+      "title": "Beating the Averages",
+      "date": "2001-04",
+      "url": "http://paulgraham.com/avg.html",
+      "file": "essays/avg.md",
+      "word_count": 4034,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:37.806838Z"
+    },
+    {
+      "id": "vw",
+      "title": "Snapshot: Viaweb, June 1998",
+      "date": "1998-06",
+      "url": "http://paulgraham.com/vw.html",
+      "file": "essays/vw.md",
+      "word_count": 867,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:14.772994Z"
+    },
+    {
+      "id": "bronze",
+      "title": "Why Smart People Have Bad Ideas",
+      "date": "1995-01",
+      "url": "http://paulgraham.com/bronze.html",
+      "file": "essays/bronze.md",
+      "word_count": 2763,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:12.287405Z"
+    },
+    {
+      "id": "speak",
+      "title": "Writing and Speaking",
+      "date": null,
+      "url": "http://paulgraham.com/speak.html",
+      "file": "essays/speak.md",
+      "word_count": 979,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:11.552297Z"
+    },
+    {
+      "id": "writes",
+      "title": "Writes and Write-Nots",
+      "date": null,
+      "url": "http://paulgraham.com/writes.html",
+      "file": "essays/writes.md",
+      "word_count": 538,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:25.798269Z"
+    },
+    {
+      "id": "simply",
+      "title": "Write Simply",
+      "date": null,
+      "url": "http://paulgraham.com/simply.html",
+      "file": "essays/simply.md",
+      "word_count": 507,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:40.375866Z"
+    },
+    {
+      "id": "talk",
+      "title": "Write Like You Talk",
+      "date": null,
+      "url": "http://paulgraham.com/talk.html",
+      "file": "essays/talk.md",
+      "word_count": 694,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:57.263443Z"
+    },
+    {
+      "id": "badeconomy",
+      "title": "Why to Start a Startup in a Bad Economy",
+      "date": null,
+      "url": "http://paulgraham.com/badeconomy.html",
+      "file": "essays/badeconomy.md",
+      "word_count": 1108,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:38.588221Z"
+    },
+    {
+      "id": "startuphubs",
+      "title": "Why to Move to a Startup Hub",
+      "date": null,
+      "url": "http://paulgraham.com/startuphubs.html",
+      "file": "essays/startuphubs.md",
+      "word_count": 1356,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:46.927715Z"
+    },
+    {
+      "id": "twitter",
+      "title": "Why Twitter is a Big Deal",
+      "date": null,
+      "url": "http://paulgraham.com/twitter.html",
+      "file": "essays/twitter.md",
+      "word_count": 145,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:30.625989Z"
+    },
+    {
+      "id": "googles",
+      "title": "Why There Aren't More Googles",
+      "date": null,
+      "url": "http://paulgraham.com/googles.html",
+      "file": "essays/googles.md",
+      "word_count": 1278,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:42.871395Z"
+    },
+    {
+      "id": "convergence",
+      "title": "Why TV Lost",
+      "date": null,
+      "url": "http://paulgraham.com/convergence.html",
+      "file": "essays/convergence.md",
+      "word_count": 421,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:33.604027Z"
+    },
+    {
+      "id": "hubs",
+      "title": "Why Startup Hubs Work",
+      "date": null,
+      "url": "http://paulgraham.com/hubs.html",
+      "file": "essays/hubs.md",
+      "word_count": 1485,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:15.365485Z"
+    },
+    {
+      "id": "nerds",
+      "title": "Why Nerds are Unpopular",
+      "date": null,
+      "url": "http://paulgraham.com/nerds.html",
+      "file": "essays/nerds.md",
+      "word_count": 5666,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:27.023363Z"
+    },
+    {
+      "id": "safe",
+      "title": "Why It's Safe for Founders to Be Nice",
+      "date": null,
+      "url": "http://paulgraham.com/safe.html",
+      "file": "essays/safe.md",
+      "word_count": 585,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:58.355136Z"
+    },
+    {
+      "id": "noop",
+      "title": "Why Arc Isn't Especially Object-Oriented",
+      "date": null,
+      "url": "http://paulgraham.com/noop.html",
+      "file": "essays/noop.md",
+      "word_count": 486,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:32.178632Z"
+    },
+    {
+      "id": "seesv",
+      "title": "Where to See Silicon Valley",
+      "date": null,
+      "url": "http://paulgraham.com/seesv.html",
+      "file": "essays/seesv.md",
+      "word_count": 1001,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:19.549188Z"
+    },
+    {
+      "id": "when",
+      "title": "When To Do What You Love",
+      "date": null,
+      "url": "http://paulgraham.com/when.html",
+      "file": "essays/when.md",
+      "word_count": 1299,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:26.358637Z"
+    },
+    {
+      "id": "do",
+      "title": "What to Do",
+      "date": null,
+      "url": "http://paulgraham.com/do.html",
+      "file": "essays/do.md",
+      "word_count": 1393,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:24.552084Z"
+    },
+    {
+      "id": "want",
+      "title": "What You (Want to)* Want",
+      "date": null,
+      "url": "http://paulgraham.com/want.html",
+      "file": "essays/want.md",
+      "word_count": 430,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:32.088059Z"
+    },
+    {
+      "id": "altair",
+      "title": "What Microsoft Is this the Altair Basic of?",
+      "date": null,
+      "url": "http://paulgraham.com/altair.html",
+      "file": "essays/altair.md",
+      "word_count": 375,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:59.467323Z"
+    },
+    {
+      "id": "fix",
+      "title": "What Languages Fix",
+      "date": null,
+      "url": "http://paulgraham.com/fix.html",
+      "file": "essays/fix.md",
+      "word_count": 213,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:30.649250Z"
+    },
+    {
+      "id": "kate",
+      "title": "What Kate Saw in Silicon Valley",
+      "date": null,
+      "url": "http://paulgraham.com/kate.html",
+      "file": "essays/kate.md",
+      "word_count": 811,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:27.691696Z"
+    },
+    {
+      "id": "users",
+      "title": "What I've Learned from Users",
+      "date": null,
+      "url": "http://paulgraham.com/users.html",
+      "file": "essays/users.md",
+      "word_count": 1975,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:33.161747Z"
+    },
+    {
+      "id": "worked",
+      "title": "What I Worked On",
+      "date": null,
+      "url": "http://paulgraham.com/worked.html",
+      "file": "essays/worked.md",
+      "word_count": 12525,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:41.645560Z"
+    },
+    {
+      "id": "sfp",
+      "title": "What I Did this Summer",
+      "date": null,
+      "url": "http://paulgraham.com/sfp.html",
+      "file": "essays/sfp.md",
+      "word_count": 2511,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:08.318286Z"
+    },
+    {
+      "id": "yahoo",
+      "title": "What Happened to Yahoo",
+      "date": null,
+      "url": "http://paulgraham.com/yahoo.html",
+      "file": "essays/yahoo.md",
+      "word_count": 1947,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:20.786058Z"
+    },
+    {
+      "id": "work",
+      "title": "What Doesn't Seem Like Work?",
+      "date": null,
+      "url": "http://paulgraham.com/work.html",
+      "file": "essays/work.md",
+      "word_count": 463,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:00.727938Z"
+    },
+    {
+      "id": "weird",
+      "title": "Weird Languages",
+      "date": null,
+      "url": "http://paulgraham.com/weird.html",
+      "file": "essays/weird.md",
+      "word_count": 328,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:36.025234Z"
+    },
+    {
+      "id": "web20",
+      "title": "Web 2.0",
+      "date": null,
+      "url": "http://paulgraham.com/web20.html",
+      "file": "essays/web20.md",
+      "word_count": 3106,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:05.971099Z"
+    },
+    {
+      "id": "judgement",
+      "title": "Two Kinds of Judgement",
+      "date": null,
+      "url": "http://paulgraham.com/judgement.html",
+      "file": "essays/judgement.md",
+      "word_count": 738,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:52.889929Z"
+    },
+    {
+      "id": "trolls",
+      "title": "Trolls",
+      "date": null,
+      "url": "http://paulgraham.com/trolls.html",
+      "file": "essays/trolls.md",
+      "word_count": 835,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:45.847239Z"
+    },
+    {
+      "id": "prop62",
+      "title": "This Year We Can End the Death Penalty in California",
+      "date": null,
+      "url": "http://paulgraham.com/prop62.html",
+      "file": "essays/prop62.md",
+      "word_count": 185,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:39.754274Z"
+    },
+    {
+      "id": "gba",
+      "title": "The Word \"Hacker\"",
+      "date": null,
+      "url": "http://paulgraham.com/gba.html",
+      "file": "essays/gba.md",
+      "word_count": 1879,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:23.205033Z"
+    },
+    {
+      "id": "vcsqueeze",
+      "title": "The Venture Capital Squeeze",
+      "date": null,
+      "url": "http://paulgraham.com/vcsqueeze.html",
+      "file": "essays/vcsqueeze.md",
+      "word_count": 1546,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:07.197314Z"
+    },
+    {
+      "id": "mod",
+      "title": "The Two Kinds of Moderate",
+      "date": null,
+      "url": "http://paulgraham.com/mod.html",
+      "file": "essays/mod.md",
+      "word_count": 534,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:48.771124Z"
+    },
+    {
+      "id": "segway",
+      "title": "The Trouble with the Segway",
+      "date": null,
+      "url": "http://paulgraham.com/segway.html",
+      "file": "essays/segway.md",
+      "word_count": 377,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:28.226013Z"
+    },
+    {
+      "id": "todo",
+      "title": "The Top of My Todo List",
+      "date": null,
+      "url": "http://paulgraham.com/todo.html",
+      "file": "essays/todo.md",
+      "word_count": 231,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:11.027812Z"
+    },
+    {
+      "id": "top",
+      "title": "The Top Idea in Your Mind",
+      "date": null,
+      "url": "http://paulgraham.com/top.html",
+      "file": "essays/top.md",
+      "word_count": 1047,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:22.429463Z"
+    },
+    {
+      "id": "field",
+      "title": "The Shape of the Essay Field",
+      "date": null,
+      "url": "http://paulgraham.com/field.html",
+      "file": "essays/field.md",
+      "word_count": 757,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:23.455953Z"
+    },
+    {
+      "id": "ronco",
+      "title": "The Ronco Principle",
+      "date": null,
+      "url": "http://paulgraham.com/ronco.html",
+      "file": "essays/ronco.md",
+      "word_count": 552,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:00.090974Z"
+    },
+    {
+      "id": "disc",
+      "title": "The Risk of Discovery",
+      "date": null,
+      "url": "http://paulgraham.com/disc.html",
+      "file": "essays/disc.md",
+      "word_count": 214,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:53.294140Z"
+    },
+    {
+      "id": "persistence",
+      "title": "The Right Kind of Stubborn",
+      "date": null,
+      "url": "http://paulgraham.com/persistence.html",
+      "file": "essays/persistence.md",
+      "word_count": 1606,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:27.461488Z"
+    },
+    {
+      "id": "re",
+      "title": "The Refragmentation",
+      "date": null,
+      "url": "http://paulgraham.com/re.html",
+      "file": "essays/re.md",
+      "word_count": 5153,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:55.628025Z"
+    },
+    {
+      "id": "reddits",
+      "title": "The Reddits",
+      "date": null,
+      "url": "http://paulgraham.com/reddits.html",
+      "file": "essays/reddits.md",
+      "word_count": 1166,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:28.009426Z"
+    },
+    {
+      "id": "real",
+      "title": "The Real Reason to End the Death Penalty",
+      "date": null,
+      "url": "http://paulgraham.com/real.html",
+      "file": "essays/real.md",
+      "word_count": 746,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:39.282268Z"
+    },
+    {
+      "id": "pypar",
+      "title": "The Python Paradox",
+      "date": null,
+      "url": "http://paulgraham.com/pypar.html",
+      "file": "essays/pypar.md",
+      "word_count": 447,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:20.454579Z"
+    },
+    {
+      "id": "prcmc",
+      "title": "The Pooled-Risk Company Management Company",
+      "date": null,
+      "url": "http://paulgraham.com/prcmc.html",
+      "file": "essays/prcmc.md",
+      "word_count": 455,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:39.946832Z"
+    },
+    {
+      "id": "patentpledge",
+      "title": "The Patent Pledge",
+      "date": null,
+      "url": "http://paulgraham.com/patentpledge.html",
+      "file": "essays/patentpledge.md",
+      "word_count": 677,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:15.980143Z"
+    },
+    {
+      "id": "artistsship",
+      "title": "The Other Half of \"Artists Ship\"",
+      "date": null,
+      "url": "http://paulgraham.com/artistsship.html",
+      "file": "essays/artistsship.md",
+      "word_count": 1307,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:38.043687Z"
+    },
+    {
+      "id": "woke",
+      "title": "The Origins of Wokeness",
+      "date": null,
+      "url": "http://paulgraham.com/woke.html",
+      "file": "essays/woke.md",
+      "word_count": 4704,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:25.251218Z"
+    },
+    {
+      "id": "superangels",
+      "title": "The New Funding Landscape",
+      "date": null,
+      "url": "http://paulgraham.com/superangels.html",
+      "file": "essays/superangels.md",
+      "word_count": 3109,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:18.929022Z"
+    },
+    {
+      "id": "read",
+      "title": "The Need to Read",
+      "date": null,
+      "url": "http://paulgraham.com/read.html",
+      "file": "essays/read.md",
+      "word_count": 383,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:31.558019Z"
+    },
+    {
+      "id": "nthings",
+      "title": "The List of N Things",
+      "date": null,
+      "url": "http://paulgraham.com/nthings.html",
+      "file": "essays/nthings.md",
+      "word_count": 1352,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:26.590417Z"
+    },
+    {
+      "id": "island",
+      "title": "The Island Test",
+      "date": null,
+      "url": "http://paulgraham.com/island.html",
+      "file": "essays/island.md",
+      "word_count": 753,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:59.007755Z"
+    },
+    {
+      "id": "highres",
+      "title": "The High-Res Society",
+      "date": null,
+      "url": "http://paulgraham.com/highres.html",
+      "file": "essays/highres.md",
+      "word_count": 1397,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:37.505274Z"
+    },
+    {
+      "id": "hw",
+      "title": "The Hardware Renaissance",
+      "date": null,
+      "url": "http://paulgraham.com/hw.html",
+      "file": "essays/hw.md",
+      "word_count": 378,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:09.230994Z"
+    },
+    {
+      "id": "future",
+      "title": "The Future of Startup Funding",
+      "date": null,
+      "url": "http://paulgraham.com/future.html",
+      "file": "essays/future.md",
+      "word_count": 3190,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:21.334984Z"
+    },
+    {
+      "id": "conformism",
+      "title": "The Four Quadrants of Conformism",
+      "date": null,
+      "url": "http://paulgraham.com/conformism.html",
+      "file": "essays/conformism.md",
+      "word_count": 1696,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:45.443363Z"
+    },
+    {
+      "id": "foundervisa",
+      "title": "The Founder Visa",
+      "date": null,
+      "url": "http://paulgraham.com/foundervisa.html",
+      "file": "essays/foundervisa.md",
+      "word_count": 364,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:31.235206Z"
+    },
+    {
+      "id": "pinch",
+      "title": "The Fatal Pinch",
+      "date": null,
+      "url": "http://paulgraham.com/pinch.html",
+      "file": "essays/pinch.md",
+      "word_count": 1351,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:03.523924Z"
+    },
+    {
+      "id": "equity",
+      "title": "The Equity Equation",
+      "date": null,
+      "url": "http://paulgraham.com/equity.html",
+      "file": "essays/equity.md",
+      "word_count": 1014,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:51.124811Z"
+    },
+    {
+      "id": "genius",
+      "title": "The Bus Ticket Theory of Genius",
+      "date": null,
+      "url": "http://paulgraham.com/genius.html",
+      "file": "essays/genius.md",
+      "word_count": 2033,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:51.629894Z"
+    },
+    {
+      "id": "best",
+      "title": "The Best Essay",
+      "date": null,
+      "url": "http://paulgraham.com/best.html",
+      "file": "essays/best.md",
+      "word_count": 3675,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:29.242795Z"
+    },
+    {
+      "id": "determination",
+      "title": "The Anatomy of Determination",
+      "date": null,
+      "url": "http://paulgraham.com/determination.html",
+      "file": "essays/determination.md",
+      "word_count": 1332,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:27.139027Z"
+    },
+    {
+      "id": "airbnbs",
+      "title": "The Airbnbs",
+      "date": null,
+      "url": "http://paulgraham.com/airbnbs.html",
+      "file": "essays/airbnbs.md",
+      "word_count": 1100,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:43.246963Z"
+    },
+    {
+      "id": "essay",
+      "title": "The Age of the Essay",
+      "date": null,
+      "url": "http://paulgraham.com/essay.html",
+      "file": "essays/essay.md",
+      "word_count": 4192,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:19.898254Z"
+    },
+    {
+      "id": "addiction",
+      "title": "The Acceleration of Addictiveness",
+      "date": null,
+      "url": "http://paulgraham.com/addiction.html",
+      "file": "essays/addiction.md",
+      "word_count": 958,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:21.866420Z"
+    },
+    {
+      "id": "startupmistakes",
+      "title": "The 18 Mistakes That Kill Startups",
+      "date": null,
+      "url": "http://paulgraham.com/startupmistakes.html",
+      "file": "essays/startupmistakes.md",
+      "word_count": 4996,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:56.633498Z"
+    },
+    {
+      "id": "tablets",
+      "title": "Tablets",
+      "date": null,
+      "url": "http://paulgraham.com/tablets.html",
+      "file": "essays/tablets.md",
+      "word_count": 531,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:17.841932Z"
+    },
+    {
+      "id": "superlinear",
+      "title": "Superlinear Returns",
+      "date": null,
+      "url": "http://paulgraham.com/superlinear.html",
+      "file": "essays/superlinear.md",
+      "word_count": 3463,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:29.776251Z"
+    },
+    {
+      "id": "airbnb",
+      "title": "Subject: Airbnb",
+      "date": null,
+      "url": "http://paulgraham.com/airbnb.html",
+      "file": "essays/airbnb.md",
+      "word_count": 1363,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:16.701704Z"
+    },
+    {
+      "id": "stuff",
+      "title": "Stuff",
+      "date": null,
+      "url": "http://paulgraham.com/stuff.html",
+      "file": "essays/stuff.md",
+      "word_count": 1244,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:50.413364Z"
+    },
+    {
+      "id": "13sentences",
+      "title": "Startups in 13 Sentences",
+      "date": null,
+      "url": "http://paulgraham.com/13sentences.html",
+      "file": "essays/13sentences.md",
+      "word_count": 1262,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:35.243713Z"
+    },
+    {
+      "id": "growth",
+      "title": "Startup = Growth",
+      "date": null,
+      "url": "http://paulgraham.com/growth.html",
+      "file": "essays/growth.md",
+      "word_count": 2598,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:09.938959Z"
+    },
+    {
+      "id": "heroes",
+      "title": "Some Heroes",
+      "date": null,
+      "url": "http://paulgraham.com/heroes.html",
+      "file": "essays/heroes.md",
+      "word_count": 2679,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:43.527135Z"
+    },
+    {
+      "id": "newthings",
+      "title": "Six Principles for Making New Things",
+      "date": null,
+      "url": "http://paulgraham.com/newthings.html",
+      "file": "essays/newthings.md",
+      "word_count": 1165,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:46.388274Z"
+    },
+    {
+      "id": "schlep",
+      "title": "Schlep Blindness",
+      "date": null,
+      "url": "http://paulgraham.com/schlep.html",
+      "file": "essays/schlep.md",
+      "word_count": 828,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:14.236428Z"
+    },
+    {
+      "id": "mac",
+      "title": "Return of the Mac",
+      "date": null,
+      "url": "http://paulgraham.com/mac.html",
+      "file": "essays/mac.md",
+      "word_count": 930,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:12.856592Z"
+    },
+    {
+      "id": "relres",
+      "title": "Relentlessly Resourceful",
+      "date": null,
+      "url": "http://paulgraham.com/relres.html",
+      "file": "essays/relres.md",
+      "word_count": 795,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:32.381667Z"
+    },
+    {
+      "id": "ramenprofitable",
+      "title": "Ramen Profitable",
+      "date": null,
+      "url": "http://paulgraham.com/ramenprofitable.html",
+      "file": "essays/ramenprofitable.md",
+      "word_count": 327,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:28.770402Z"
+    },
+    {
+      "id": "rss",
+      "title": "RSS",
+      "date": null,
+      "url": "http://paulgraham.com/rss.html",
+      "file": "essays/rss.md",
+      "word_count": 10,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:40.279328Z"
+    },
+    {
+      "id": "words",
+      "title": "Putting Ideas into Words",
+      "date": null,
+      "url": "http://paulgraham.com/words.html",
+      "file": "essays/words.md",
+      "word_count": 1043,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:34.283265Z"
+    },
+    {
+      "id": "progbot",
+      "title": "Programming Bottom-Up",
+      "date": null,
+      "url": "http://paulgraham.com/progbot.html",
+      "file": "essays/progbot.md",
+      "word_count": 919,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:39.068712Z"
+    },
+    {
+      "id": "publishing",
+      "title": "Post-Medium Publishing",
+      "date": null,
+      "url": "http://paulgraham.com/publishing.html",
+      "file": "essays/publishing.md",
+      "word_count": 1570,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:26.017061Z"
+    },
+    {
+      "id": "discover",
+      "title": "Persuade xor Discover",
+      "date": null,
+      "url": "http://paulgraham.com/discover.html",
+      "file": "essays/discover.md",
+      "word_count": 1099,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:25.471268Z"
+    },
+    {
+      "id": "organic",
+      "title": "Organic Startup Ideas",
+      "date": null,
+      "url": "http://paulgraham.com/organic.html",
+      "file": "essays/organic.md",
+      "word_count": 887,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:23.549133Z"
+    },
+    {
+      "id": "nov",
+      "title": "Novelty and Heresy",
+      "date": null,
+      "url": "http://paulgraham.com/nov.html",
+      "file": "essays/nov.md",
+      "word_count": 253,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:51.077358Z"
+    },
+    {
+      "id": "colleges",
+      "title": "News from the Front",
+      "date": null,
+      "url": "http://paulgraham.com/colleges.html",
+      "file": "essays/colleges.md",
+      "word_count": 1865,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:48.757226Z"
+    },
+    {
+      "id": "wtax",
+      "title": "Modeling a Wealth Tax",
+      "date": null,
+      "url": "http://paulgraham.com/wtax.html",
+      "file": "essays/wtax.md",
+      "word_count": 172,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:44.888840Z"
+    },
+    {
+      "id": "gap",
+      "title": "Mind the Gap",
+      "date": null,
+      "url": "http://paulgraham.com/gap.html",
+      "file": "essays/gap.md",
+      "word_count": 4171,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:21.959765Z"
+    },
+    {
+      "id": "microsoft",
+      "title": "Microsoft is Dead",
+      "date": null,
+      "url": "http://paulgraham.com/microsoft.html",
+      "file": "essays/microsoft.md",
+      "word_count": 1187,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:53.436745Z"
+    },
+    {
+      "id": "mean",
+      "title": "Mean People Fail",
+      "date": null,
+      "url": "http://paulgraham.com/mean.html",
+      "file": "essays/mean.md",
+      "word_count": 922,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:04.094288Z"
+    },
+    {
+      "id": "makersschedule",
+      "title": "Maker's Schedule, Manager's Schedule",
+      "date": null,
+      "url": "http://paulgraham.com/makersschedule.html",
+      "file": "essays/makersschedule.md",
+      "word_count": 1128,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:29.398450Z"
+    },
+    {
+      "id": "vb",
+      "title": "Life is Short",
+      "date": null,
+      "url": "http://paulgraham.com/vb.html",
+      "file": "essays/vb.md",
+      "word_count": 1566,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:54.393658Z"
+    },
+    {
+      "id": "lies",
+      "title": "Lies We Tell Kids",
+      "date": null,
+      "url": "http://paulgraham.com/lies.html",
+      "file": "essays/lies.md",
+      "word_count": 4584,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:41.740368Z"
+    },
+    {
+      "id": "95",
+      "title": "Let the Other 95% of Great Programmers In",
+      "date": null,
+      "url": "http://paulgraham.com/95.html",
+      "file": "essays/95.md",
+      "word_count": 670,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:01.899278Z"
+    },
+    {
+      "id": "identity",
+      "title": "Keep Your Identity Small",
+      "date": null,
+      "url": "http://paulgraham.com/identity.html",
+      "file": "essays/identity.md",
+      "word_count": 689,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:35.861304Z"
+    },
+    {
+      "id": "jessica",
+      "title": "Jessica Livingston",
+      "date": null,
+      "url": "http://paulgraham.com/jessica.html",
+      "file": "essays/jessica.md",
+      "word_count": 1663,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:56.173396Z"
+    },
+    {
+      "id": "javacover",
+      "title": "Java's Cover",
+      "date": null,
+      "url": "http://paulgraham.com/javacover.html",
+      "file": "essays/javacover.md",
+      "word_count": 1360,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:37.225381Z"
+    },
+    {
+      "id": "wisdom",
+      "title": "Is It Worth Being Wise?",
+      "date": null,
+      "url": "http://paulgraham.com/wisdom.html",
+      "file": "essays/wisdom.md",
+      "word_count": 2992,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:54.809525Z"
+    },
+    {
+      "id": "herd",
+      "title": "Investor Herd Dynamics",
+      "date": null,
+      "url": "http://paulgraham.com/herd.html",
+      "file": "essays/herd.md",
+      "word_count": 938,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:06.153921Z"
+    },
+    {
+      "id": "iflisp",
+      "title": "If Lisp is So Great",
+      "date": null,
+      "url": "http://paulgraham.com/iflisp.html",
+      "file": "essays/iflisp.md",
+      "word_count": 414,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:25.801544Z"
+    },
+    {
+      "id": "useful",
+      "title": "How to Write Usefully",
+      "date": null,
+      "url": "http://paulgraham.com/useful.html",
+      "file": "essays/useful.md",
+      "word_count": 402,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:47.095291Z"
+    },
+    {
+      "id": "hwh",
+      "title": "How to Work Hard",
+      "date": null,
+      "url": "http://paulgraham.com/hwh.html",
+      "file": "essays/hwh.md",
+      "word_count": 2767,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:36.568158Z"
+    },
+    {
+      "id": "think",
+      "title": "How to Think for Yourself",
+      "date": null,
+      "url": "http://paulgraham.com/think.html",
+      "file": "essays/think.md",
+      "word_count": 626,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:43.800068Z"
+    },
+    {
+      "id": "fr",
+      "title": "How to Raise Money",
+      "date": null,
+      "url": "http://paulgraham.com/fr.html",
+      "file": "essays/fr.md",
+      "word_count": 8864,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:05.567065Z"
+    },
+    {
+      "id": "selfindulgence",
+      "title": "How to Lose Time and Money",
+      "date": null,
+      "url": "http://paulgraham.com/selfindulgence.html",
+      "file": "essays/selfindulgence.md",
+      "word_count": 658,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:22.912415Z"
+    },
+    {
+      "id": "selfindulgence",
+      "title": "How to Lose Time and Money",
+      "date": null,
+      "url": "http://paulgraham.com/selfindulgence.html",
+      "file": "essays/selfindulgence.md",
+      "word_count": 658,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:22.992827Z"
+    },
+    {
+      "id": "startupideas",
+      "title": "How to Get Startup Ideas",
+      "date": null,
+      "url": "http://paulgraham.com/startupideas.html",
+      "file": "essays/startupideas.md",
+      "word_count": 6188,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:08.647564Z"
+    },
+    {
+      "id": "love",
+      "title": "How to Do What You Love",
+      "date": null,
+      "url": "http://paulgraham.com/love.html",
+      "file": "essays/love.md",
+      "word_count": 4333,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:04.886982Z"
+    },
+    {
+      "id": "philosophy",
+      "title": "How to Do Philosophy",
+      "date": null,
+      "url": "http://paulgraham.com/philosophy.html",
+      "file": "essays/philosophy.md",
+      "word_count": 3727,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:48.208044Z"
+    },
+    {
+      "id": "greatwork",
+      "title": "How to Do Great Work",
+      "date": null,
+      "url": "http://paulgraham.com/greatwork.html",
+      "file": "essays/greatwork.md",
+      "word_count": 10478,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:21.815717Z"
+    },
+    {
+      "id": "greatwork",
+      "title": "How to Do Great Work",
+      "date": null,
+      "url": "http://paulgraham.com/greatwork.html",
+      "file": "essays/greatwork.md",
+      "word_count": 10478,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:30.485488Z"
+    },
+    {
+      "id": "disagree",
+      "title": "How to Disagree",
+      "date": null,
+      "url": "http://paulgraham.com/disagree.html",
+      "file": "essays/disagree.md",
+      "word_count": 1483,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:44.137580Z"
+    },
+    {
+      "id": "convince",
+      "title": "How to Convince Investors",
+      "date": null,
+      "url": "http://paulgraham.com/convince.html",
+      "file": "essays/convince.md",
+      "word_count": 2816,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:06.694973Z"
+    },
+    {
+      "id": "ecw",
+      "title": "How to Be an Expert in a Changing World",
+      "date": null,
+      "url": "http://paulgraham.com/ecw.html",
+      "file": "essays/ecw.md",
+      "word_count": 908,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:02.442587Z"
+    },
+    {
+      "id": "know",
+      "title": "How You Know",
+      "date": null,
+      "url": "http://paulgraham.com/know.html",
+      "file": "essays/know.md",
+      "word_count": 631,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:02.991073Z"
+    },
+    {
+      "id": "ycstart",
+      "title": "How Y Combinator Started",
+      "date": null,
+      "url": "http://paulgraham.com/ycstart.html",
+      "file": "essays/ycstart.md",
+      "word_count": 1445,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:12.072886Z"
+    },
+    {
+      "id": "richnow",
+      "title": "How People Get Rich Now",
+      "date": null,
+      "url": "http://paulgraham.com/richnow.html",
+      "file": "essays/richnow.md",
+      "word_count": 1859,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:39.828971Z"
+    },
+    {
+      "id": "goodart",
+      "title": "How Art Can Be Good",
+      "date": null,
+      "url": "http://paulgraham.com/goodart.html",
+      "file": "essays/goodart.md",
+      "word_count": 3010,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:55.911691Z"
+    },
+    {
+      "id": "head",
+      "title": "Holding a Program in One's Head",
+      "date": null,
+      "url": "http://paulgraham.com/head.html",
+      "file": "essays/head.md",
+      "word_count": 1804,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:49.874013Z"
+    },
+    {
+      "id": "hiresfund",
+      "title": "High Resolution Fundraising",
+      "date": null,
+      "url": "http://paulgraham.com/hiresfund.html",
+      "file": "essays/hiresfund.md",
+      "word_count": 688,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:20.164282Z"
+    },
+    {
+      "id": "heresy",
+      "title": "Heresy",
+      "date": null,
+      "url": "http://paulgraham.com/heresy.html",
+      "file": "essays/heresy.md",
+      "word_count": 1650,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:33.728520Z"
+    },
+    {
+      "id": "kids",
+      "title": "Having Kids",
+      "date": null,
+      "url": "http://paulgraham.com/kids.html",
+      "file": "essays/kids.md",
+      "word_count": 1521,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:22.373357Z"
+    },
+    {
+      "id": "kids",
+      "title": "Having Kids",
+      "date": null,
+      "url": "http://paulgraham.com/kids.html",
+      "file": "essays/kids.md",
+      "word_count": 1521,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:49.857696Z"
+    },
+    {
+      "id": "procrastination",
+      "title": "Good and Bad Procrastination",
+      "date": null,
+      "url": "http://paulgraham.com/procrastination.html",
+      "file": "essays/procrastination.md",
+      "word_count": 1785,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:05.418524Z"
+    },
+    {
+      "id": "goodwriting",
+      "title": "Good Writing",
+      "date": null,
+      "url": "http://paulgraham.com/goodwriting.html",
+      "file": "essays/goodwriting.md",
+      "word_count": 1433,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:23.995309Z"
+    },
+    {
+      "id": "sun",
+      "title": "General and Surprising",
+      "date": null,
+      "url": "http://paulgraham.com/sun.html",
+      "file": "essays/sun.md",
+      "word_count": 423,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:52.180414Z"
+    },
+    {
+      "id": "ambitious",
+      "title": "Frighteningly Ambitious Startup Ideas",
+      "date": null,
+      "url": "http://paulgraham.com/ambitious.html",
+      "file": "essays/ambitious.md",
+      "word_count": 3592,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:13.161820Z"
+    },
+    {
+      "id": "foundermode",
+      "title": "Founder Mode",
+      "date": null,
+      "url": "http://paulgraham.com/foundermode.html",
+      "file": "essays/foundermode.md",
+      "word_count": 1056,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:26.885945Z"
+    },
+    {
+      "id": "control",
+      "title": "Founder Control",
+      "date": null,
+      "url": "http://paulgraham.com/control.html",
+      "file": "essays/control.md",
+      "word_count": 749,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:17.294303Z"
+    },
+    {
+      "id": "5founders",
+      "title": "Five Founders",
+      "date": null,
+      "url": "http://paulgraham.com/5founders.html",
+      "file": "essays/5founders.md",
+      "word_count": 755,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:31.836757Z"
+    },
+    {
+      "id": "fn",
+      "title": "Fierce Nerds",
+      "date": null,
+      "url": "http://paulgraham.com/fn.html",
+      "file": "essays/fn.md",
+      "word_count": 1020,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:37.642151Z"
+    },
+    {
+      "id": "fp",
+      "title": "Fashionable Problems",
+      "date": null,
+      "url": "http://paulgraham.com/fp.html",
+      "file": "essays/fp.md",
+      "word_count": 188,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:49.310656Z"
+    },
+    {
+      "id": "ineq",
+      "title": "Economic Inequality",
+      "date": null,
+      "url": "http://paulgraham.com/ineq.html",
+      "file": "essays/ineq.md",
+      "word_count": 308,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:54.930913Z"
+    },
+    {
+      "id": "earnest",
+      "title": "Earnestness",
+      "date": null,
+      "url": "http://paulgraham.com/earnest.html",
+      "file": "essays/earnest.md",
+      "word_count": 1247,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:42.183681Z"
+    },
+    {
+      "id": "early",
+      "title": "Early Work",
+      "date": null,
+      "url": "http://paulgraham.com/early.html",
+      "file": "essays/early.md",
+      "word_count": 840,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:44.344218Z"
+    },
+    {
+      "id": "donate",
+      "title": "Donate Unrestricted",
+      "date": null,
+      "url": "http://paulgraham.com/donate.html",
+      "file": "essays/donate.md",
+      "word_count": 467,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:40.946412Z"
+    },
+    {
+      "id": "corpdev",
+      "title": "Don't Talk to Corp Dev",
+      "date": null,
+      "url": "http://paulgraham.com/corpdev.html",
+      "file": "essays/corpdev.md",
+      "word_count": 1118,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:01.354030Z"
+    },
+    {
+      "id": "ds",
+      "title": "Do Things that Don't Scale",
+      "date": null,
+      "url": "http://paulgraham.com/ds.html",
+      "file": "essays/ds.md",
+      "word_count": 3748,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:07.394282Z"
+    },
+    {
+      "id": "distraction",
+      "title": "Disconnecting Distraction",
+      "date": null,
+      "url": "http://paulgraham.com/distraction.html",
+      "file": "essays/distraction.md",
+      "word_count": 621,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:41.031301Z"
+    },
+    {
+      "id": "property",
+      "title": "Defining Property",
+      "date": null,
+      "url": "http://paulgraham.com/property.html",
+      "file": "essays/property.md",
+      "word_count": 816,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:12.612592Z"
+    },
+    {
+      "id": "aord",
+      "title": "Default Alive or Default Dead?",
+      "date": null,
+      "url": "http://paulgraham.com/aord.html",
+      "file": "essays/aord.md",
+      "word_count": 1221,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:57.808942Z"
+    },
+    {
+      "id": "newideas",
+      "title": "Crazy New Ideas",
+      "date": null,
+      "url": "http://paulgraham.com/newideas.html",
+      "file": "essays/newideas.md",
+      "word_count": 1131,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:38.201462Z"
+    },
+    {
+      "id": "cred",
+      "title": "Coronavirus and Credibility",
+      "date": null,
+      "url": "http://paulgraham.com/cred.html",
+      "file": "essays/cred.md",
+      "word_count": 235,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:46.550054Z"
+    },
+    {
+      "id": "pow",
+      "title": "Charisma / Power",
+      "date": null,
+      "url": "http://paulgraham.com/pow.html",
+      "file": "essays/pow.md",
+      "word_count": 119,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:52.742760Z"
+    },
+    {
+      "id": "name",
+      "title": "Change Your Name",
+      "date": null,
+      "url": "http://paulgraham.com/name.html",
+      "file": "essays/name.md",
+      "word_count": 628,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:58.908512Z"
+    },
+    {
+      "id": "maybe",
+      "title": "Can You Buy a Silicon Valley?  Maybe.",
+      "date": null,
+      "url": "http://paulgraham.com/maybe.html",
+      "file": "essays/maybe.md",
+      "word_count": 313,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:34.148429Z"
+    },
+    {
+      "id": "swan",
+      "title": "Black Swan Farming",
+      "date": null,
+      "url": "http://paulgraham.com/swan.html",
+      "file": "essays/swan.md",
+      "word_count": 1529,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:10.484738Z"
+    },
+    {
+      "id": "ace",
+      "title": "Billionaires Build",
+      "date": null,
+      "url": "http://paulgraham.com/ace.html",
+      "file": "essays/ace.md",
+      "word_count": 3222,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:42.718170Z"
+    },
+    {
+      "id": "smart",
+      "title": "Beyond Smart",
+      "date": null,
+      "url": "http://paulgraham.com/smart.html",
+      "file": "essays/smart.md",
+      "word_count": 1149,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:35.447076Z"
+    },
+    {
+      "id": "noob",
+      "title": "Being a Noob",
+      "date": null,
+      "url": "http://paulgraham.com/noob.html",
+      "file": "essays/noob.md",
+      "word_count": 371,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:47.631087Z"
+    },
+    {
+      "id": "apple",
+      "title": "Apple's Mistake",
+      "date": null,
+      "url": "http://paulgraham.com/apple.html",
+      "file": "essays/apple.md",
+      "word_count": 139,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:24.090918Z"
+    },
+    {
+      "id": "nft",
+      "title": "An NFT That Saves Lives",
+      "date": null,
+      "url": "http://paulgraham.com/nft.html",
+      "file": "essays/nft.md",
+      "word_count": 312,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:38.747284Z"
+    },
+    {
+      "id": "unions",
+      "title": "An Alternative Theory of Unions",
+      "date": null,
+      "url": "http://paulgraham.com/unions.html",
+      "file": "essays/unions.md",
+      "word_count": 513,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:51.661206Z"
+    },
+    {
+      "id": "alien",
+      "title": "Alien Truth",
+      "date": null,
+      "url": "http://paulgraham.com/alien.html",
+      "file": "essays/alien.md",
+      "word_count": 664,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:30:32.634731Z"
+    },
+    {
+      "id": "ladder",
+      "title": "After the Ladder",
+      "date": null,
+      "url": "http://paulgraham.com/ladder.html",
+      "file": "essays/ladder.md",
+      "word_count": 583,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:32:09.538830Z"
+    },
+    {
+      "id": "credentials",
+      "title": "After Credentials",
+      "date": null,
+      "url": "http://paulgraham.com/credentials.html",
+      "file": "essays/credentials.md",
+      "word_count": 128,
+      "has_footnotes": false,
+      "scraped_at": "2025-11-17T11:31:36.412070Z"
+    },
+    {
+      "id": "word",
+      "title": "A Word to the Resourceful",
+      "date": null,
+      "url": "http://paulgraham.com/word.html",
+      "file": "essays/word.md",
+      "word_count": 608,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:13.703090Z"
+    },
+    {
+      "id": "bias",
+      "title": "A Way to Detect Bias",
+      "date": null,
+      "url": "http://paulgraham.com/bias.html",
+      "file": "essays/bias.md",
+      "word_count": 467,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:56.727502Z"
+    },
+    {
+      "id": "venturecapital",
+      "title": "A Unified Theory of VC Suckage",
+      "date": null,
+      "url": "http://paulgraham.com/venturecapital.html",
+      "file": "essays/venturecapital.md",
+      "word_count": 1326,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:32:14.748454Z"
+    },
+    {
+      "id": "own",
+      "title": "A Project of One's Own",
+      "date": null,
+      "url": "http://paulgraham.com/own.html",
+      "file": "essays/own.md",
+      "word_count": 2056,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:30:37.093836Z"
+    },
+    {
+      "id": "revolution",
+      "title": "A Local Revolution?",
+      "date": null,
+      "url": "http://paulgraham.com/revolution.html",
+      "file": "essays/revolution.md",
+      "word_count": 1021,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:30.012682Z"
+    },
+    {
+      "id": "fundraising",
+      "title": "A Fundraising Survival Guide",
+      "date": null,
+      "url": "http://paulgraham.com/fundraising.html",
+      "file": "essays/fundraising.md",
+      "word_count": 4440,
+      "has_footnotes": true,
+      "scraped_at": "2025-11-17T11:31:39.287530Z"
+    }
+  ],
+  "total_count": 232,
+  "last_updated": "2025-11-17T11:32:40.279674Z"
+}

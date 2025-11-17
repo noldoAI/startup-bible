@@ -189,7 +189,7 @@ async function sendMessage() {
 }
 
 // Add Message to UI
-function addMessage(role, content) {
+function addMessage(role, content, streaming = true) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${role}`;
 
@@ -199,15 +199,63 @@ function addMessage(role, content) {
 
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
-    messageContent.textContent = content;
 
     messageDiv.appendChild(avatar);
     messageDiv.appendChild(messageContent);
-
     chatContainer.appendChild(messageDiv);
 
-    // Scroll to bottom
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    // For user messages or when loading history, show immediately
+    if (role === 'user' || !streaming) {
+        messageContent.textContent = content;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        return;
+    }
+
+    // For assistant messages, add typing animation
+    typeMessage(messageContent, content);
+}
+
+// Typing animation for streaming effect
+function typeMessage(element, text) {
+    let index = 0;
+    element.textContent = '';
+
+    // Add typing cursor
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    cursor.textContent = '▌';
+    element.appendChild(cursor);
+
+    function typeNextChar() {
+        if (index < text.length) {
+            // Remove cursor temporarily
+            cursor.remove();
+
+            // Add next character(s) - we'll add 1-3 chars at a time for more natural feel
+            const charsToAdd = Math.random() > 0.7 ? Math.min(3, text.length - index) :
+                               Math.random() > 0.5 ? Math.min(2, text.length - index) : 1;
+
+            const currentText = element.textContent;
+            element.textContent = currentText + text.substr(index, charsToAdd);
+            index += charsToAdd;
+
+            // Re-add cursor
+            element.appendChild(cursor);
+
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Variable speed for more natural feel (15-35ms per batch)
+            const delay = Math.random() * 20 + 15;
+            setTimeout(typeNextChar, delay);
+        } else {
+            // Remove cursor when done
+            cursor.remove();
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    }
+
+    typeNextChar();
 }
 
 // Set Processing State
@@ -237,9 +285,9 @@ async function loadHistory() {
                 welcomeMessage.remove();
             }
 
-            // Add messages
+            // Add messages without streaming (instant for history)
             data.messages.forEach(msg => {
-                addMessage(msg.role, msg.content);
+                addMessage(msg.role, msg.content, false);
             });
         }
     } catch (error) {
@@ -379,7 +427,7 @@ async function switchConversation(sessionId) {
             chatContainer.innerHTML = '';
             if (data.messages && data.messages.length > 0) {
                 data.messages.forEach(msg => {
-                    addMessage(msg.role, msg.content);
+                    addMessage(msg.role, msg.content, false);
                 });
             } else {
                 chatContainer.innerHTML = `

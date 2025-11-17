@@ -195,7 +195,7 @@ function addMessage(role, content) {
 
     const avatar = document.createElement('div');
     avatar.className = 'message-avatar';
-    avatar.textContent = role === 'user' ? '👤' : '🤖';
+    avatar.textContent = role === 'user' ? 'You' : 'AI';
 
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
@@ -258,7 +258,7 @@ async function clearChat() {
             // Clear UI
             chatContainer.innerHTML = `
                 <div class="welcome-message">
-                    <h2>Welcome! 👋</h2>
+                    <h2>Welcome</h2>
                     <p>Start a conversation with Claude Code. Ask me anything!</p>
                 </div>
             `;
@@ -329,8 +329,8 @@ function renderConversations() {
             <div class="conversation-item-header">
                 <div class="conversation-item-title">${escapeHtml(title)}</div>
                 <div class="conversation-item-actions">
-                    <button class="btn-conversation-action" onclick="exportConversationById('${conv.session_id}')" title="Export">💾</button>
-                    <button class="btn-conversation-action" onclick="deleteConversationById('${conv.session_id}')" title="Delete">🗑️</button>
+                    <button class="btn-conversation-action" onclick="exportConversationById('${conv.session_id}')" title="Export">Export</button>
+                    <button class="btn-conversation-action" onclick="deleteConversationById('${conv.session_id}')" title="Delete">Delete</button>
                 </div>
             </div>
             <div class="conversation-item-meta">
@@ -384,7 +384,7 @@ async function switchConversation(sessionId) {
             } else {
                 chatContainer.innerHTML = `
                     <div class="welcome-message">
-                        <h2>Welcome! 👋</h2>
+                        <h2>Welcome</h2>
                         <p>Start a conversation with Claude Code. Ask me anything!</p>
                     </div>
                 `;
@@ -396,7 +396,7 @@ async function switchConversation(sessionId) {
             conversationTitle.dataset.archived = data.metadata.archived || false;
 
             // Update archive button
-            archiveBtn.textContent = data.metadata.archived ? '📂' : '📦';
+            archiveBtn.textContent = data.metadata.archived ? 'Unarchive' : 'Archive';
             archiveBtn.title = data.metadata.archived ? 'Unarchive conversation' : 'Archive conversation';
 
             // Reload conversations to update active state
@@ -446,7 +446,7 @@ async function createNewConversation() {
             // Clear chat
             chatContainer.innerHTML = `
                 <div class="welcome-message">
-                    <h2>Welcome! 👋</h2>
+                    <h2>Welcome</h2>
                     <p>Start a conversation with Claude Code. Ask me anything!</p>
                 </div>
             `;
@@ -457,7 +457,7 @@ async function createNewConversation() {
             conversationTitle.dataset.archived = false;
 
             // Update archive button
-            archiveBtn.textContent = '📦';
+            archiveBtn.textContent = 'Archive';
             archiveBtn.title = 'Archive conversation';
 
             // Reload conversations
@@ -575,7 +575,7 @@ async function toggleArchiveConversation() {
 
         if (data.success) {
             conversationTitle.dataset.archived = !isArchived;
-            archiveBtn.textContent = !isArchived ? '📂' : '📦';
+            archiveBtn.textContent = !isArchived ? 'Unarchive' : 'Archive';
             archiveBtn.title = !isArchived ? 'Unarchive conversation' : 'Archive conversation';
             await loadConversations();
         } else {

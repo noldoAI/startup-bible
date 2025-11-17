@@ -20,7 +20,7 @@ body {
 /* App Container */
 .app-container {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1800px;
     height: 90vh;
     background: #0a0a0a;
     border-radius: 12px;
@@ -309,7 +309,7 @@ body {
 .header {
     background: #000000;
     color: #ffffff;
-    padding: 20px 32px;
+    padding: 20px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -452,7 +452,7 @@ body {
 .chat-container {
     flex: 1;
     overflow-y: auto;
-    padding: 32px;
+    padding: 24px;
     background: #0a0a0a;
     display: flex;
     flex-direction: column;
@@ -550,7 +550,7 @@ body {
 }
 
 .message-content {
-    max-width: 70%;
+    max-width: 75%;
     padding: 14px 20px;
     line-height: 1.6;
     word-wrap: break-word;
@@ -1108,7 +1108,7 @@ body {
 
 /* Selected Essays Badge (above input) */
 .selected-essays-badge {
-    margin: 0 32px 12px 32px;
+    margin: 0 24px 12px 24px;
     padding: 10px 16px;
     background: linear-gradient(135deg, #1a1a1a 0%, #0f1419 100%);
     border: 1px solid #2a2a2a;
@@ -1164,7 +1164,7 @@ body {
 
 /* Input Area */
 .input-area {
-    padding: 24px 32px;
+    padding: 24px;
     background: #000000;
     border-top: 1px solid #222;
     display: flex;
@@ -1259,7 +1259,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 32px;
+    padding: 12px 24px;
     background: #0a0a0a;
     border-top: 1px solid #222;
     color: #666;

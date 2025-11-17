@@ -61,6 +61,9 @@
                             <option value="haiku">Haiku</option>
                         </select>
                     </div>
+                    <button id="essay-toggle-btn" class="btn btn-icon" title="Browse Essays">
+                        <span>📚</span> Essays
+                    </button>
                     <label class="debug-toggle">
                         <input type="checkbox" id="debug-mode" />
                         <span>Debug Mode</span>
@@ -81,6 +84,13 @@
                 </div>
             </div>
 
+            <!-- Selected Essays Badge -->
+            <div id="selected-essays-badge" class="selected-essays-badge" style="display: none;">
+                <span class="badge-icon">📚</span>
+                <span class="badge-text" id="badge-text">0 essays selected</span>
+                <button id="badge-clear-btn" class="badge-clear-btn" title="Clear selection">×</button>
+            </div>
+
             <!-- Input Area -->
             <div class="input-area">
                 <textarea
@@ -97,6 +107,42 @@
                 <span>Claude is thinking...</span>
             </div>
         </div>
+
+        <!-- Essay Navigator Sidebar -->
+        <aside class="essay-sidebar" id="essay-sidebar">
+            <div class="essay-sidebar-header">
+                <h3>Paul Graham Essays</h3>
+                <button class="essay-sidebar-close" id="essay-sidebar-close">×</button>
+            </div>
+
+            <div class="essay-search">
+                <input
+                    type="text"
+                    id="essay-search-input"
+                    placeholder="Search essays..."
+                    class="essay-search-input"
+                />
+            </div>
+
+            <div class="selected-essays-container" id="selected-essays-container" style="display: none;">
+                <div class="selected-essays-header">
+                    <span class="selected-essays-count" id="selected-essays-count">0 selected</span>
+                    <button id="clear-selection-btn" class="btn-text-small">Clear All</button>
+                </div>
+                <div class="selected-essays-chips" id="selected-essays-chips">
+                    <!-- Selected essay chips will be inserted here -->
+                </div>
+            </div>
+
+            <div class="essay-list-container">
+                <div class="essay-list-header">
+                    <span id="essay-list-status">Loading essays...</span>
+                </div>
+                <div class="essay-list" id="essay-list">
+                    <!-- Essay items will be inserted here -->
+                </div>
+            </div>
+        </aside>
     </div>
 
     <!-- Confirmation Modal -->

@@ -22,6 +22,9 @@ app.secret_key = 'your-secret-key-change-in-production'  # Change this in produc
 SESSIONS_DIR = Path(__file__).parent / "sessions"
 SESSIONS_DIR.mkdir(exist_ok=True)
 SHARES_FILE = SESSIONS_DIR / "shares.json"
+PAUL_GRAHAM_DIR = Path(__file__).parent.parent / "paul-graham" / "data"
+ESSAYS_INDEX_FILE = PAUL_GRAHAM_DIR / "index.json"
+ESSAYS_DIR = PAUL_GRAHAM_DIR / "essays"
 CLAUDE_TIMEOUT = 60  # 1 minute timeout for Claude responses
 DEFAULT_MODEL = "sonnet"
 SYSTEM_PROMPT = "You are a helpful AI assistant. Respond to the user's message naturally and conversationally."
@@ -127,6 +130,133 @@ def get_session_from_token(token: str) -> Optional[str]:
     if share_data:
         return share_data.get("session_id")
     return None
+
+
+def load_essays_index() -> List[Dict]:
+    """Load the Paul Graham essays index."""
+    try:
+        if not ESSAYS_INDEX_FILE.exists():
+            return []
+        with open(ESSAYS_INDEX_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            # index.json has structure: {"essays": [...], "total_count": N, "last_updated": "..."}
+            if isinstance(data, dict) and 'essays' in data:
+                return data['essays']
+            elif isinstance(data, list):
+                return data
+            else:
+                return []
+    except Exception as e:
+        print(f"Error loading essays index: {e}")
+        return []
+
+
+def load_essay_content(essay_id: str) -> Optional[Dict]:
+    """Load a specific essay's content from markdown file."""
+    try:
+        essay_file = ESSAYS_DIR / f"{essay_id}.md"
+        if not essay_file.exists():
+            return None
+
+        with open(essay_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Parse frontmatter and content
+        metadata = {}
+        essay_content = content
+
+        if content.startswith('---'):
+            parts = content.split('---', 2)
+            if len(parts) >= 3:
+                # Has frontmatter - parse it manually
+                frontmatter = parts[1].strip()
+                essay_content = parts[2].strip()
+
+                # Simple YAML parsing for key: value pairs
+                for line in frontmatter.split('\n'):
+                    line = line.strip()
+                    if ':' in line:
+                        key, value = line.split(':', 1)
+                        key = key.strip()
+                        value = value.strip()
+
+                        # Try to convert to appropriate type
+                        if value.lower() == 'true':
+                            value = True
+                        elif value.lower() == 'false':
+                            value = False
+                        elif value.isdigit():
+                            value = int(value)
+
+                        metadata[key] = value
+
+        return {
+            **metadata,
+            'content': essay_content,
+            'full_markdown': content
+        }
+    except Exception as e:
+        print(f"Error loading essay {essay_id}: {e}")
+        return None
+
+
+def search_essays(query: str, limit: int = 10) -> List[Dict]:
+    """
+    Search essays by query string.
+    Searches in: title, topics, key_concepts, summary, questions_answered.
+    """
+    if not query:
+        return []
+
+    query_lower = query.lower()
+    essays = load_essays_index()
+    results = []
+
+    for essay in essays:
+        score = 0
+        matches = []
+
+        # Search in title (highest weight)
+        title = essay.get('title', '').lower()
+        if query_lower in title:
+            score += 10
+            matches.append('title')
+
+        # Search in topics
+        topics = essay.get('topics', [])
+        if any(query_lower in topic.lower() for topic in topics):
+            score += 5
+            matches.append('topics')
+
+        # Search in key_concepts
+        key_concepts = essay.get('key_concepts', [])
+        if any(query_lower in concept.lower() for concept in key_concepts):
+            score += 3
+            matches.append('key_concepts')
+
+        # Search in summary
+        summary = essay.get('summary', '').lower()
+        if query_lower in summary:
+            score += 2
+            matches.append('summary')
+
+        # Search in questions_answered
+        questions = essay.get('questions_answered', [])
+        if any(query_lower in q.lower() for q in questions):
+            score += 4
+            matches.append('questions')
+
+        if score > 0:
+            results.append({
+                **essay,
+                'search_score': score,
+                'matched_fields': matches
+            })
+
+    # Sort by score (descending)
+    results.sort(key=lambda x: x['search_score'], reverse=True)
+
+    return results[:limit]
 
 
 class ConversationManager:
@@ -460,6 +590,73 @@ def chat():
     result = manager.ask_claude(user_message, injected_context=context)
 
     return jsonify(result)
+
+
+@app.route('/api/essays', methods=['GET'])
+def get_essays():
+    """Get list of all Paul Graham essays."""
+    try:
+        essays = load_essays_index()
+        return jsonify({
+            "success": True,
+            "essays": essays,
+            "count": len(essays)
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/essays/<essay_id>', methods=['GET'])
+def get_essay(essay_id):
+    """Get specific essay content by ID."""
+    try:
+        # Get metadata from index
+        essays = load_essays_index()
+        essay_metadata = next((e for e in essays if e.get('id') == essay_id), None)
+
+        if not essay_metadata:
+            return jsonify({"success": False, "error": "Essay not found"}), 404
+
+        # Load full content
+        essay_content = load_essay_content(essay_id)
+
+        if not essay_content:
+            return jsonify({"success": False, "error": "Essay content not found"}), 404
+
+        # Combine metadata and content
+        essay = {
+            **essay_metadata,
+            **essay_content
+        }
+
+        return jsonify({
+            "success": True,
+            "essay": essay
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/essays/search', methods=['GET'])
+def search_essays_route():
+    """Search essays by query string."""
+    try:
+        query = request.args.get('q', '').strip()
+        limit = int(request.args.get('limit', 10))
+
+        if not query:
+            return jsonify({"success": False, "error": "Query parameter 'q' is required"}), 400
+
+        results = search_essays(query, limit=limit)
+
+        return jsonify({
+            "success": True,
+            "query": query,
+            "results": results,
+            "count": len(results)
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route('/api/history', methods=['GET'])

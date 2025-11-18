@@ -30,6 +30,10 @@ CLAUDE_TIMEOUT = 600  # 10 minute timeout for Claude responses
 DEFAULT_MODEL = "sonnet"
 SYSTEM_PROMPT = "You are a helpful AI assistant. Respond to the user's message naturally and conversationally."
 
+# Auto Context Enrichment Configuration
+AUTO_CONTEXT_ENRICHMENT = True  # Automatically enrich responses with relevant PG essays
+MAX_CONTEXT_ESSAYS = 3  # Maximum number of essays to include in context
+
 
 def generate_title_from_message(message: str, max_length: int = 50) -> str:
     """Generate a conversation title from the first message."""
@@ -203,8 +207,15 @@ def load_essay_content(essay_id: str) -> Optional[Dict]:
 
 def search_essays(query: str, limit: int = 10) -> List[Dict]:
     """
-    LLM-powered semantic search for essays using Claude Code CLI.
-    Uses semantic understanding to find relevant essays based on query intent.
+    LLM-powered semantic search with automatic classification.
+
+    First classifies if query needs Paul Graham essay context (YES/NO).
+    If YES, searches index.json metadata to find most relevant essays.
+    If NO, returns empty array (e.g., for greetings, math, unrelated topics).
+
+    Returns:
+        List of essay metadata dicts with search_score and search_reason.
+        Empty list [] if query doesn't need essay context.
     """
     if not query:
         return []
@@ -226,23 +237,32 @@ def search_essays(query: str, limit: int = 10) -> List[Dict]:
             "date": essay.get("date", "")
         })
 
-    # Construct prompt for Claude
-    prompt = f"""You are a semantic search engine for Paul Graham's essays.
+    # Construct prompt for Claude with classification
+    prompt = f"""You are a smart semantic search engine for Paul Graham's essays.
 
 Query: "{query}"
 
-Your task: Analyze the query and find the top {limit} most relevant essays from the list below. Consider semantic meaning, intent, and context - not just keyword matching.
+STEP 1: CLASSIFICATION
+First, determine if this query would benefit from Paul Graham essay context:
+- YES if: startup/entrepreneurship questions, business advice, PG's opinions, tech industry topics, founder advice
+- NO if: greetings ("hello", "hi"), simple math ("what's 2+2"), general chitchat, completely unrelated topics
 
-Essays metadata:
+STEP 2: SEARCH (only if YES from Step 1)
+If context is needed, analyze the essay metadata below and find the top {limit} most relevant essays.
+Consider semantic meaning, intent, and context - not just keyword matching.
+
+Essays metadata (from index.json):
 {json.dumps(essay_metadata, indent=2)}
 
-Return ONLY a JSON array of essay IDs ranked by relevance (most relevant first), with this exact structure:
+RETURN FORMAT:
+- If Step 1 = NO (no context needed): Return empty array []
+- If Step 1 = YES (context helpful): Return JSON array with top essays:
 [
   {{"essay_id": "id1", "relevance_score": 9.5, "reason": "brief explanation"}},
   {{"essay_id": "id2", "relevance_score": 8.2, "reason": "brief explanation"}}
 ]
 
-Return exactly {limit} results (or fewer if less than {limit} are relevant). Only include essays with relevance_score >= 5.0."""
+Return up to {limit} results. Only include essays with relevance_score >= 5.0."""
 
     try:
         # Call Claude Code CLI in headless mode, using stdin to avoid "argument list too long" error
@@ -669,24 +689,75 @@ def chat_session(session_id):
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    """Handle chat messages."""
+    """Handle chat messages with automatic context enrichment."""
     data = request.get_json()
     user_message = data.get('message', '').strip()
     model = data.get('model', DEFAULT_MODEL)
 
-    # Optional: Context injection for RAG features
-    context = data.get('context')  # Optional dict with 'essays', 'instructions', etc.
-
     if not user_message:
         return jsonify({"success": False, "error": "Message cannot be empty"}), 400
+
+    # Optional: Manual context injection for RAG features (backward compatibility)
+    manual_context = data.get('context')
+
+    # Automatic context enrichment
+    context = None
+    context_metadata = None
+
+    if manual_context:
+        # User manually selected essays - use those
+        context = manual_context
+        context_metadata = {"type": "manual", "source": "user_selected"}
+    elif AUTO_CONTEXT_ENRICHMENT:
+        # Automatic context enrichment with LLM-powered search
+        try:
+            # Step 1: Search for relevant essays (LLM decides if needed + which ones)
+            relevant_essays = search_essays(user_message, limit=MAX_CONTEXT_ESSAYS)
+
+            if relevant_essays and len(relevant_essays) > 0:
+                # Step 2: Load full essay content for selected essays
+                essays_content = []
+                for essay_meta in relevant_essays[:MAX_CONTEXT_ESSAYS]:
+                    essay_data = load_essay_content(essay_meta['id'])
+                    if essay_data:
+                        essays_content.append({
+                            'title': essay_meta.get('title'),
+                            'file': essay_meta.get('file'),
+                            'content': essay_data.get('content'),
+                            'relevance_score': essay_meta.get('search_score'),
+                            'search_reason': essay_meta.get('search_reason')
+                        })
+
+                if essays_content:
+                    context = {'essays': essays_content}
+                    context_metadata = {
+                        "type": "auto",
+                        "source": "llm_search",
+                        "essay_count": len(essays_content),
+                        "essays_used": [
+                            {
+                                "title": e['title'],
+                                "relevance_score": e.get('relevance_score'),
+                                "reason": e.get('search_reason')
+                            }
+                            for e in essays_content
+                        ]
+                    }
+        except Exception as e:
+            print(f"Error in auto context enrichment: {e}")
+            # Continue without context if enrichment fails
 
     # Get or create session
     session_id = session.get('session_id', str(uuid.uuid4()))
     session['session_id'] = session_id
 
-    # Process message with optional context injection
+    # Process message with context (manual or auto)
     manager = ConversationManager(session_id, model)
     result = manager.ask_claude(user_message, injected_context=context)
+
+    # Add context enrichment info to debug data
+    if context_metadata and 'debug_info' in result:
+        result['debug_info']['context_enrichment'] = context_metadata
 
     return jsonify(result)
 

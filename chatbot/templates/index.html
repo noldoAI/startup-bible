@@ -82,6 +82,39 @@
                     <span class="context-status" id="context-status">No essays loaded</span>
                 </div>
                 <div class="context-content" id="context-content">
+                    <!-- Token Usage Progress Bar -->
+                    <div class="token-progress-section">
+                        <div class="token-header">
+                            <span class="token-label">Context Window Usage</span>
+                            <span class="token-stats" id="token-stats">0 / 200k tokens (0%)</span>
+                        </div>
+                        <div class="token-progress-bar">
+                            <div class="token-progress-fill" id="token-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="token-breakdown" id="token-breakdown">
+                            <div class="token-item">
+                                <span class="token-icon" style="background: #8b5cf6"></span>
+                                <span class="token-type">Input:</span>
+                                <span class="token-value" id="token-input">0</span>
+                            </div>
+                            <div class="token-item">
+                                <span class="token-icon" style="background: #3b82f6"></span>
+                                <span class="token-type">Output:</span>
+                                <span class="token-value" id="token-output">0</span>
+                            </div>
+                            <div class="token-item">
+                                <span class="token-icon" style="background: #10b981"></span>
+                                <span class="token-type">Cache:</span>
+                                <span class="token-value" id="token-cache">0</span>
+                            </div>
+                            <div class="token-item">
+                                <span class="token-icon" style="background: #f59e0b"></span>
+                                <span class="token-type">Cost:</span>
+                                <span class="token-value" id="token-cost">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="context-stats">
                         <div class="context-stat">
                             <span class="stat-label">Auto-enrichment:</span>

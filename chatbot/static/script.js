@@ -1224,6 +1224,42 @@ async function updateContextBar() {
         const data = await response.json();
 
         if (data.success) {
+            // Update token usage if available
+            if (data.token_usage) {
+                const tokenUsage = data.token_usage;
+                const percentage = tokenUsage.context_percentage;
+
+                // Update progress bar
+                const progressFill = document.getElementById('token-progress-fill');
+                progressFill.style.width = `${percentage}%`;
+
+                // Color code based on usage
+                if (percentage >= 90) {
+                    progressFill.style.background = '#ef4444'; // red
+                } else if (percentage >= 70) {
+                    progressFill.style.background = '#f59e0b'; // orange
+                } else if (percentage >= 50) {
+                    progressFill.style.background = '#eab308'; // yellow
+                } else {
+                    progressFill.style.background = '#10b981'; // green
+                }
+
+                // Update token stats
+                const totalK = (tokenUsage.total_tokens / 1000).toFixed(1);
+                document.getElementById('token-stats').textContent =
+                    `${totalK}k / 200k tokens (${percentage.toFixed(1)}%)`;
+
+                // Update breakdown
+                document.getElementById('token-input').textContent =
+                    (tokenUsage.input_tokens / 1000).toFixed(1) + 'k';
+                document.getElementById('token-output').textContent =
+                    (tokenUsage.output_tokens / 1000).toFixed(1) + 'k';
+                document.getElementById('token-cache').textContent =
+                    ((tokenUsage.cache_creation_tokens + tokenUsage.cache_read_tokens) / 1000).toFixed(1) + 'k';
+                document.getElementById('token-cost').textContent =
+                    `$${tokenUsage.total_cost_usd.toFixed(4)}`;
+            }
+
             // Update status
             const statusText = data.essays_in_context.length > 0
                 ? `${data.essays_in_context.length} essay(s) loaded`

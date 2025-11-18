@@ -533,6 +533,10 @@ class ConversationManager:
             if 'session_id' in response_data:
                 self.conversation["claude_session_id"] = response_data['session_id']
 
+            # Extract token usage from Claude Code response
+            usage_data = response_data.get('usage', {})
+            model_usage = response_data.get('modelUsage', {})
+
             # Build rich debug info
             debug_info = {
                 "session_management": {
@@ -553,6 +557,18 @@ class ConversationManager:
                     "duration_ms": response_data.get('duration_ms'),
                     "turn_count": response_data.get('num_turns'),
                     "response_length": len(response)
+                },
+                "token_usage": {
+                    "input_tokens": usage_data.get('input_tokens', 0),
+                    "output_tokens": usage_data.get('output_tokens', 0),
+                    "cache_creation_tokens": usage_data.get('cache_creation_input_tokens', 0),
+                    "cache_read_tokens": usage_data.get('cache_read_input_tokens', 0),
+                    "total_tokens": (
+                        usage_data.get('input_tokens', 0) +
+                        usage_data.get('output_tokens', 0) +
+                        usage_data.get('cache_creation_input_tokens', 0)
+                    ),
+                    "model_usage": model_usage
                 },
                 "metadata": {
                     "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -995,6 +1011,13 @@ def get_context():
     unique_essays_map = {}  # title -> {title, timestamp}
     total_context_chars = 0
 
+    # Token usage tracking
+    total_input_tokens = 0
+    total_output_tokens = 0
+    total_cache_creation_tokens = 0
+    total_cache_read_tokens = 0
+    total_cost_usd = 0.0
+
     for msg in history:
         if msg.get('role') == 'assistant' and 'enrichment_steps' in msg:
             # Extract essay info from enrichment steps
@@ -1010,11 +1033,27 @@ def get_context():
 
         if msg.get('role') == 'assistant' and 'debug_info' in msg:
             debug = msg['debug_info']
+
+            # Calculate context chars
             if 'message_flow' in debug and 'injected_context' in debug['message_flow']:
                 ctx = debug['message_flow']['injected_context']
                 if ctx and 'essays' in ctx:
                     for essay in ctx['essays']:
                         total_context_chars += len(essay.get('content', ''))
+
+            # Sum token usage
+            if 'token_usage' in debug:
+                token_usage = debug['token_usage']
+                total_input_tokens += token_usage.get('input_tokens', 0)
+                total_output_tokens += token_usage.get('output_tokens', 0)
+                total_cache_creation_tokens += token_usage.get('cache_creation_tokens', 0)
+                total_cache_read_tokens += token_usage.get('cache_read_tokens', 0)
+
+            # Sum cost
+            if 'performance' in debug:
+                cost = debug['performance'].get('token_cost', 0)
+                if cost:
+                    total_cost_usd += cost
 
     # Convert to list, sorted by timestamp (most recent first)
     all_essays_used = sorted(
@@ -1023,6 +1062,11 @@ def get_context():
         reverse=True
     )
 
+    # Calculate total tokens and percentage of context window
+    total_tokens = total_input_tokens + total_output_tokens + total_cache_creation_tokens
+    context_window_size = 200000  # Claude's context window
+    context_percentage = (total_tokens / context_window_size) * 100 if total_tokens > 0 else 0
+
     return jsonify({
         "success": True,
         "auto_enrichment_enabled": AUTO_CONTEXT_ENRICHMENT,
@@ -1030,7 +1074,17 @@ def get_context():
         "total_messages": len(history),
         "essays_in_context": all_essays_used,
         "unique_essays_used": len(unique_essays_map),
-        "total_context_chars": total_context_chars
+        "total_context_chars": total_context_chars,
+        "token_usage": {
+            "total_tokens": total_tokens,
+            "input_tokens": total_input_tokens,
+            "output_tokens": total_output_tokens,
+            "cache_creation_tokens": total_cache_creation_tokens,
+            "cache_read_tokens": total_cache_read_tokens,
+            "context_window_size": context_window_size,
+            "context_percentage": round(context_percentage, 2),
+            "total_cost_usd": round(total_cost_usd, 4)
+        }
     })
 
 

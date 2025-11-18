@@ -81,16 +81,18 @@
                     <span class="context-title">Context</span>
                     <span class="context-status" id="context-status">No essays loaded</span>
                 </div>
+
+                <!-- Token Progress Bar - Always Visible -->
+                <div class="token-progress-compact">
+                    <div class="token-progress-bar">
+                        <div class="token-progress-fill" id="token-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="token-stats-compact" id="token-stats-compact">0 / 200k tokens (0%)</div>
+                </div>
+
                 <div class="context-content" id="context-content">
-                    <!-- Token Usage Progress Bar -->
-                    <div class="token-progress-section">
-                        <div class="token-header">
-                            <span class="token-label">Context Window Usage</span>
-                            <span class="token-stats" id="token-stats">0 / 200k tokens (0%)</span>
-                        </div>
-                        <div class="token-progress-bar">
-                            <div class="token-progress-fill" id="token-progress-fill" style="width: 0%"></div>
-                        </div>
+                    <!-- Token Breakdown - Only when expanded -->
+                    <div class="token-breakdown-section">
                         <div class="token-breakdown" id="token-breakdown">
                             <div class="token-item">
                                 <span class="token-icon" style="background: #8b5cf6"></span>

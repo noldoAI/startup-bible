@@ -1467,8 +1467,22 @@ body {
     max-height: 600px;
 }
 
-/* Token Progress Section */
-.token-progress-section {
+/* Token Progress Compact - Always Visible */
+.token-progress-compact {
+    padding: 10px 20px 12px 20px;
+    border-bottom: 1px solid #222;
+}
+
+.token-stats-compact {
+    font-size: 11px;
+    color: #888;
+    margin-top: 6px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Token Breakdown Section - Only when expanded */
+.token-breakdown-section {
     margin-bottom: 20px;
     padding: 16px;
     background: rgba(0, 0, 0, 0.4);

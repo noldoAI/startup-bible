@@ -1244,12 +1244,12 @@ async function updateContextBar() {
                     progressFill.style.background = '#10b981'; // green
                 }
 
-                // Update token stats
+                // Update compact token stats (always visible)
                 const totalK = (tokenUsage.total_tokens / 1000).toFixed(1);
-                document.getElementById('token-stats').textContent =
-                    `${totalK}k / 200k tokens (${percentage.toFixed(1)}%)`;
+                const statsText = `${totalK}k / 200k tokens (${percentage.toFixed(1)}%)`;
+                document.getElementById('token-stats-compact').textContent = statsText;
 
-                // Update breakdown
+                // Update detailed breakdown (only visible when expanded)
                 document.getElementById('token-input').textContent =
                     (tokenUsage.input_tokens / 1000).toFixed(1) + 'k';
                 document.getElementById('token-output').textContent =

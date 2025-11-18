@@ -5,6 +5,7 @@ Flask-based chatbot web interface that uses Claude Code in headless mode.
 
 import argparse
 import json
+import re
 import secrets
 import subprocess
 import uuid
@@ -25,7 +26,7 @@ SHARES_FILE = SESSIONS_DIR / "shares.json"
 PAUL_GRAHAM_DIR = Path(__file__).parent.parent / "paul-graham" / "data"
 ESSAYS_INDEX_FILE = PAUL_GRAHAM_DIR / "index.json"
 ESSAYS_DIR = PAUL_GRAHAM_DIR / "essays"
-CLAUDE_TIMEOUT = 60  # 1 minute timeout for Claude responses
+CLAUDE_TIMEOUT = 600  # 10 minute timeout for Claude responses
 DEFAULT_MODEL = "sonnet"
 SYSTEM_PROMPT = "You are a helpful AI assistant. Respond to the user's message naturally and conversationally."
 
@@ -202,14 +203,112 @@ def load_essay_content(essay_id: str) -> Optional[Dict]:
 
 def search_essays(query: str, limit: int = 10) -> List[Dict]:
     """
-    Search essays by query string.
-    Searches in: title, topics, key_concepts, summary, questions_answered.
+    LLM-powered semantic search for essays using Claude Code CLI.
+    Uses semantic understanding to find relevant essays based on query intent.
     """
     if not query:
         return []
 
-    query_lower = query.lower()
     essays = load_essays_index()
+    if not essays:
+        return []
+
+    # Prepare essay metadata for LLM (streamlined for token efficiency)
+    essay_metadata = []
+    for essay in essays:
+        essay_metadata.append({
+            "id": essay.get("id"),
+            "title": essay.get("title"),
+            "summary": essay.get("summary", ""),
+            "topics": essay.get("topics", []),
+            "key_concepts": essay.get("key_concepts", []),
+            "questions_answered": essay.get("questions_answered", []),
+            "date": essay.get("date", "")
+        })
+
+    # Construct prompt for Claude
+    prompt = f"""You are a semantic search engine for Paul Graham's essays.
+
+Query: "{query}"
+
+Your task: Analyze the query and find the top {limit} most relevant essays from the list below. Consider semantic meaning, intent, and context - not just keyword matching.
+
+Essays metadata:
+{json.dumps(essay_metadata, indent=2)}
+
+Return ONLY a JSON array of essay IDs ranked by relevance (most relevant first), with this exact structure:
+[
+  {{"essay_id": "id1", "relevance_score": 9.5, "reason": "brief explanation"}},
+  {{"essay_id": "id2", "relevance_score": 8.2, "reason": "brief explanation"}}
+]
+
+Return exactly {limit} results (or fewer if less than {limit} are relevant). Only include essays with relevance_score >= 5.0."""
+
+    try:
+        # Call Claude Code CLI in headless mode, using stdin to avoid "argument list too long" error
+        result = subprocess.run(
+            [
+                "claude",
+                "--output-format", "json",
+                "--model", "haiku"  # Fast, cheap model for search
+            ],
+            input=prompt,
+            capture_output=True,
+            text=True,
+            timeout=30  # 30 second timeout for search
+        )
+
+        if result.returncode != 0:
+            print(f"Claude CLI error for search: {result.stderr}")
+            return _fallback_search(query, essays, limit)
+
+        # Parse Claude's response
+        try:
+            response_data = json.loads(result.stdout)
+            claude_response = response_data.get('result', '').strip()
+
+            # Extract JSON array from response (Claude might wrap it in markdown)
+            # Look for JSON array pattern
+            json_match = re.search(r'\[[\s\S]*\]', claude_response)
+            if json_match:
+                ranked_results = json.loads(json_match.group(0))
+            else:
+                print(f"Could not parse JSON from Claude response: {claude_response}")
+                return _fallback_search(query, essays, limit)
+
+            # Map essay IDs back to full essay objects
+            results = []
+            essay_lookup = {e['id']: e for e in essays}
+
+            for result_item in ranked_results:
+                essay_id = result_item.get('essay_id')
+                if essay_id in essay_lookup:
+                    essay = essay_lookup[essay_id].copy()
+                    essay['search_score'] = result_item.get('relevance_score', 0)
+                    essay['search_reason'] = result_item.get('reason', '')
+                    essay['matched_fields'] = ['llm_semantic']  # For compatibility
+                    results.append(essay)
+
+            return results
+
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            print(f"Failed to parse Claude search response: {e}")
+            return _fallback_search(query, essays, limit)
+
+    except subprocess.TimeoutExpired:
+        print("Claude search timed out")
+        return _fallback_search(query, essays, limit)
+    except Exception as e:
+        print(f"Error in LLM search: {e}")
+        return _fallback_search(query, essays, limit)
+
+
+def _fallback_search(query: str, essays: List[Dict], limit: int) -> List[Dict]:
+    """
+    Fallback to simple keyword search if LLM search fails.
+    This is the original hardcoded search logic.
+    """
+    query_lower = query.lower()
     results = []
 
     for essay in essays:

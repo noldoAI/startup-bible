@@ -460,7 +460,7 @@ class ConversationManager:
 
         return "\n".join(parts)
 
-    def ask_claude(self, user_message: str, injected_context: Optional[Dict] = None) -> Dict:
+    def ask_claude(self, user_message: str, injected_context: Optional[Dict] = None, enrichment_steps: Optional[List] = None) -> Dict:
         """
         Send message to Claude Code and get response.
 
@@ -470,6 +470,7 @@ class ConversationManager:
         Args:
             user_message: The user's question/message
             injected_context: Optional context to inject (essays, instructions, etc.)
+            enrichment_steps: Optional list of enrichment steps to save with message
 
         Returns:
             dict with 'success', 'response', 'debug_info', and optional 'error'
@@ -580,12 +581,17 @@ class ConversationManager:
                 user_msg_data["context_metadata"] = context_metadata
 
             self.conversation["messages"].append(user_msg_data)
-            self.conversation["messages"].append({
+
+            assistant_msg_data = {
                 "role": "assistant",
                 "content": response,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "debug_info": debug_info
-            })
+            }
+            if enrichment_steps:
+                assistant_msg_data["enrichment_steps"] = enrichment_steps
+
+            self.conversation["messages"].append(assistant_msg_data)
 
             # Auto-generate title from first message if not set
             if not self.conversation.get("title") and len(self.conversation["messages"]) == 2:
@@ -775,6 +781,9 @@ def chat_stream():
     def generate():
         """Generator function for SSE streaming."""
         try:
+            # Track progress steps for persistence
+            progress_steps = []
+
             # Get or create session
             session_id = session.get('session_id', str(uuid.uuid4()))
             session['session_id'] = session_id
@@ -788,11 +797,15 @@ def chat_stream():
                 # User manually selected essays
                 context = manual_context
                 context_metadata = {"type": "manual", "source": "user_selected"}
-                yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': 'Using manually selected essays', 'status': 'completed'})}\n\n"
+                step = {'step': 1, 'action': 'Using manually selected essays', 'status': 'completed'}
+                progress_steps.append(step)
+                yield f"data: {json.dumps({'type': 'step', **step})}\n\n"
 
             elif AUTO_CONTEXT_ENRICHMENT:
                 # Step 1: Analyze query and search for essays
-                yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': 'Analyzing query for relevant essays', 'status': 'in_progress'})}\n\n"
+                step = {'step': 1, 'action': 'Analyzing query for relevant essays', 'status': 'in_progress'}
+                progress_steps.append(step)
+                yield f"data: {json.dumps({'type': 'step', **step})}\n\n"
 
                 try:
                     relevant_essays = search_essays(user_message, limit=MAX_CONTEXT_ESSAYS)
@@ -800,10 +813,13 @@ def chat_stream():
                     if relevant_essays and len(relevant_essays) > 0:
                         # Step 1 complete - found essays
                         essay_titles = [e.get('title') for e in relevant_essays[:3]]
+                        progress_steps[0].update({'action': f'Found {len(relevant_essays)} relevant essay(s)', 'status': 'completed', 'essays': essay_titles})
                         yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': f'Found {len(relevant_essays)} relevant essay(s)', 'status': 'completed', 'essays': essay_titles})}\n\n"
 
                         # Step 2: Load essay content
-                        yield f"data: {json.dumps({'type': 'step', 'step': 2, 'action': 'Loading full essay content', 'status': 'in_progress'})}\n\n"
+                        step = {'step': 2, 'action': 'Loading full essay content', 'status': 'in_progress'}
+                        progress_steps.append(step)
+                        yield f"data: {json.dumps({'type': 'step', **step})}\n\n"
 
                         essays_content = []
                         total_chars = 0
@@ -836,35 +852,50 @@ def chat_stream():
                                 ]
                             }
 
+                            progress_steps[1].update({'action': f'Loaded {len(essays_content)} essay(s) (~{total_chars:,} characters)', 'status': 'completed'})
                             yield f"data: {json.dumps({'type': 'step', 'step': 2, 'action': f'Loaded {len(essays_content)} essay(s) (~{total_chars:,} characters)', 'status': 'completed'})}\n\n"
 
                             # Step 3: Generate answer with context
-                            yield f"data: {json.dumps({'type': 'step', 'step': 3, 'action': 'Generating answer with essay context', 'status': 'in_progress'})}\n\n"
+                            step = {'step': 3, 'action': 'Generating answer with essay context', 'status': 'in_progress'}
+                            progress_steps.append(step)
+                            yield f"data: {json.dumps({'type': 'step', **step})}\n\n"
                         else:
+                            progress_steps[1].update({'action': 'Failed to load essays', 'status': 'error'})
                             yield f"data: {json.dumps({'type': 'step', 'step': 2, 'action': 'Failed to load essays', 'status': 'error'})}\n\n"
                     else:
                         # No essays needed
+                        progress_steps[0].update({'action': 'No essay context needed', 'status': 'completed'})
                         yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': 'No essay context needed', 'status': 'completed'})}\n\n"
 
                         # Skip to generating answer
-                        yield f"data: {json.dumps({'type': 'step', 'step': 2, 'action': 'Generating answer', 'status': 'in_progress'})}\n\n"
+                        step = {'step': 2, 'action': 'Generating answer', 'status': 'in_progress'}
+                        progress_steps.append(step)
+                        yield f"data: {json.dumps({'type': 'step', **step})}\n\n"
 
                 except Exception as e:
+                    if progress_steps:
+                        progress_steps[0].update({'action': f'Error during enrichment: {str(e)}', 'status': 'error'})
                     yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': f'Error during enrichment: {str(e)}', 'status': 'error'})}\n\n"
             else:
                 # Auto-enrichment disabled
-                yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': 'Generating answer (auto-enrichment disabled)', 'status': 'in_progress'})}\n\n"
+                step = {'step': 1, 'action': 'Generating answer (auto-enrichment disabled)', 'status': 'in_progress'}
+                progress_steps.append(step)
+                yield f"data: {json.dumps({'type': 'step', **step})}\n\n"
 
-            # Process message with Claude
+            # Mark final step as completed before sending to Claude
+            if progress_steps and len(progress_steps) > 0:
+                progress_steps[-1]['status'] = 'completed'
+
+            # Process message with Claude (pass progress_steps for persistence)
             manager = ConversationManager(session_id, model)
-            result = manager.ask_claude(user_message, injected_context=context)
+            result = manager.ask_claude(user_message, injected_context=context, enrichment_steps=progress_steps if progress_steps else None)
 
             # Add context enrichment info to debug data
             if context_metadata and 'debug_info' in result:
                 result['debug_info']['context_enrichment'] = context_metadata
 
-            # Send final answer
-            yield f"data: {json.dumps({'type': 'answer', 'success': result.get('success', True), 'response': result.get('response', ''), 'debug_info': result.get('debug_info', {})})}\n\n"
+            # Send final answer (include enrichment_steps in response)
+            yield f"data: {json.dumps({'type': 'answer', 'success': result.get('success', True), 'response': result.get('response', ''), 'debug_info': result.get('debug_info', {}), 'enrichment_steps': progress_steps})}\n\n"
 
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'error': str(e)})}\n\n"

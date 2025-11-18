@@ -481,6 +481,13 @@ async function loadHistory() {
 
             // Add messages without streaming (instant for history)
             data.messages.forEach(msg => {
+                // Render enrichment steps if present (for assistant messages)
+                if (msg.role === 'assistant' && msg.enrichment_steps && msg.enrichment_steps.length > 0) {
+                    const progressDiv = createProgressIndicator();
+                    progressDiv.classList.add('completed');
+                    renderProgressSteps(progressDiv, msg.enrichment_steps);
+                    chatContainer.appendChild(progressDiv);
+                }
                 addMessage(msg.role, msg.content, false, msg.debug_info);
             });
         }

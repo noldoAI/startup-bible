@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from flask import Flask, render_template, request, jsonify, session, send_file, redirect
+from flask import Flask, render_template, request, jsonify, session, send_file, redirect, Response, stream_with_context
 import os
 
 app = Flask(__name__)
@@ -760,6 +760,118 @@ def chat():
         result['debug_info']['context_enrichment'] = context_metadata
 
     return jsonify(result)
+
+
+@app.route('/api/chat/stream', methods=['POST'])
+def chat_stream():
+    """Handle chat messages with Server-Sent Events for real-time progress updates."""
+    data = request.get_json()
+    user_message = data.get('message', '').strip()
+    model = data.get('model', DEFAULT_MODEL)
+
+    if not user_message:
+        return jsonify({"success": False, "error": "Message cannot be empty"}), 400
+
+    def generate():
+        """Generator function for SSE streaming."""
+        try:
+            # Get or create session
+            session_id = session.get('session_id', str(uuid.uuid4()))
+            session['session_id'] = session_id
+
+            # Optional: Manual context injection
+            manual_context = data.get('context')
+            context = None
+            context_metadata = None
+
+            if manual_context:
+                # User manually selected essays
+                context = manual_context
+                context_metadata = {"type": "manual", "source": "user_selected"}
+                yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': 'Using manually selected essays', 'status': 'completed'})}\n\n"
+
+            elif AUTO_CONTEXT_ENRICHMENT:
+                # Step 1: Analyze query and search for essays
+                yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': 'Analyzing query for relevant essays', 'status': 'in_progress'})}\n\n"
+
+                try:
+                    relevant_essays = search_essays(user_message, limit=MAX_CONTEXT_ESSAYS)
+
+                    if relevant_essays and len(relevant_essays) > 0:
+                        # Step 1 complete - found essays
+                        essay_titles = [e.get('title') for e in relevant_essays[:3]]
+                        yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': f'Found {len(relevant_essays)} relevant essay(s)', 'status': 'completed', 'essays': essay_titles})}\n\n"
+
+                        # Step 2: Load essay content
+                        yield f"data: {json.dumps({'type': 'step', 'step': 2, 'action': 'Loading full essay content', 'status': 'in_progress'})}\n\n"
+
+                        essays_content = []
+                        total_chars = 0
+                        for essay_meta in relevant_essays[:MAX_CONTEXT_ESSAYS]:
+                            essay_data = load_essay_content(essay_meta['id'])
+                            if essay_data:
+                                content = essay_data.get('content', '')
+                                total_chars += len(content)
+                                essays_content.append({
+                                    'title': essay_meta.get('title'),
+                                    'file': essay_meta.get('file'),
+                                    'content': content,
+                                    'relevance_score': essay_meta.get('search_score'),
+                                    'search_reason': essay_meta.get('search_reason')
+                                })
+
+                        if essays_content:
+                            context = {'essays': essays_content}
+                            context_metadata = {
+                                "type": "auto",
+                                "source": "llm_search",
+                                "essay_count": len(essays_content),
+                                "essays_used": [
+                                    {
+                                        "title": e['title'],
+                                        "relevance_score": e.get('relevance_score'),
+                                        "reason": e.get('search_reason')
+                                    }
+                                    for e in essays_content
+                                ]
+                            }
+
+                            yield f"data: {json.dumps({'type': 'step', 'step': 2, 'action': f'Loaded {len(essays_content)} essay(s) (~{total_chars:,} characters)', 'status': 'completed'})}\n\n"
+
+                            # Step 3: Generate answer with context
+                            yield f"data: {json.dumps({'type': 'step', 'step': 3, 'action': 'Generating answer with essay context', 'status': 'in_progress'})}\n\n"
+                        else:
+                            yield f"data: {json.dumps({'type': 'step', 'step': 2, 'action': 'Failed to load essays', 'status': 'error'})}\n\n"
+                    else:
+                        # No essays needed
+                        yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': 'No essay context needed', 'status': 'completed'})}\n\n"
+
+                        # Skip to generating answer
+                        yield f"data: {json.dumps({'type': 'step', 'step': 2, 'action': 'Generating answer', 'status': 'in_progress'})}\n\n"
+
+                except Exception as e:
+                    yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': f'Error during enrichment: {str(e)}', 'status': 'error'})}\n\n"
+            else:
+                # Auto-enrichment disabled
+                yield f"data: {json.dumps({'type': 'step', 'step': 1, 'action': 'Generating answer (auto-enrichment disabled)', 'status': 'in_progress'})}\n\n"
+
+            # Process message with Claude
+            manager = ConversationManager(session_id, model)
+            result = manager.ask_claude(user_message, injected_context=context)
+
+            # Add context enrichment info to debug data
+            if context_metadata and 'debug_info' in result:
+                result['debug_info']['context_enrichment'] = context_metadata
+
+            # Send final answer
+            yield f"data: {json.dumps({'type': 'answer', 'success': result.get('success', True), 'response': result.get('response', ''), 'debug_info': result.get('debug_info', {})})}\n\n"
+
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'error': str(e)})}\n\n"
+        finally:
+            yield "data: [DONE]\n\n"
+
+    return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 
 @app.route('/api/essays', methods=['GET'])

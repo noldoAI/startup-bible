@@ -244,7 +244,7 @@ function setupEventListeners() {
     });
 }
 
-// Send Message
+// Send Message with SSE (Server-Sent Events) for real-time progress
 async function sendMessage() {
     const message = userInput.value.trim();
 
@@ -291,7 +291,7 @@ async function sendMessage() {
             }
         }
 
-        // Send to backend
+        // Send to backend via SSE endpoint
         const requestBody = {
             message: message,
             model: modelSelect.value
@@ -301,7 +301,11 @@ async function sendMessage() {
             requestBody.context = context;
         }
 
-        const response = await fetch('/api/chat', {
+        // Create progress indicator element
+        let progressDiv = null;
+        let steps = [];
+
+        const response = await fetch('/api/chat/stream', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -309,21 +313,83 @@ async function sendMessage() {
             body: JSON.stringify(requestBody)
         });
 
-        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-        if (data.success) {
-            // Add assistant response with debug info
-            addMessage('assistant', data.response, true, data.debug_info);
-            // Reload conversations to update title/metadata
-            await loadConversations();
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-            // Clear essay selection after successful send with context
-            if (selectedEssayIds.size > 0) {
-                clearEssaySelection();
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop(); // Keep incomplete line in buffer
+
+            for (const line of lines) {
+                if (!line.trim() || !line.startsWith('data: ')) continue;
+
+                const dataStr = line.slice(6); // Remove 'data: ' prefix
+                if (dataStr === '[DONE]') {
+                    // Remove progress indicator
+                    if (progressDiv) {
+                        progressDiv.remove();
+                        progressDiv = null;
+                    }
+                    continue;
+                }
+
+                try {
+                    const data = JSON.parse(dataStr);
+
+                    if (data.type === 'step') {
+                        // Update or add step
+                        if (!progressDiv) {
+                            progressDiv = createProgressIndicator();
+                            chatContainer.appendChild(progressDiv);
+                        }
+
+                        if (data.status === 'in_progress' || data.status === 'completed' || data.status === 'error') {
+                            const existingIndex = steps.findIndex(s => s.step === data.step);
+                            if (existingIndex >= 0) {
+                                steps[existingIndex] = data;
+                            } else {
+                                steps.push(data);
+                            }
+                            renderProgressSteps(progressDiv, steps);
+                        }
+                    } else if (data.type === 'answer') {
+                        // Remove progress, add final answer
+                        if (progressDiv) {
+                            progressDiv.remove();
+                            progressDiv = null;
+                        }
+
+                        if (data.success) {
+                            addMessage('assistant', data.response, true, data.debug_info);
+                            await loadConversations();
+
+                            // Clear essay selection after successful send with context
+                            if (selectedEssayIds.size > 0) {
+                                clearEssaySelection();
+                            }
+                        } else {
+                            addMessage('assistant', `Error: ${data.error || 'Unknown error occurred'}`);
+                        }
+                    } else if (data.type === 'error') {
+                        if (progressDiv) {
+                            progressDiv.remove();
+                            progressDiv = null;
+                        }
+                        addMessage('assistant', `Error: ${data.error || 'Unknown error occurred'}`);
+                    }
+                } catch (e) {
+                    console.error('Error parsing SSE data:', e, dataStr);
+                }
             }
-        } else {
-            // Show error
-            addMessage('assistant', `Error: ${data.error || 'Unknown error occurred'}`);
         }
 
     } catch (error) {
@@ -332,6 +398,47 @@ async function sendMessage() {
     } finally {
         setProcessing(false);
         userInput.focus();
+    }
+}
+
+// Create progress indicator element
+function createProgressIndicator() {
+    const div = document.createElement('div');
+    div.className = 'enrichment-progress';
+    return div;
+}
+
+// Render progress steps
+function renderProgressSteps(container, steps) {
+    const stepCount = steps.length;
+    const completedCount = steps.filter(s => s.status === 'completed').length;
+
+    container.innerHTML = `
+        <div class="progress-header">
+            <span class="progress-icon">⚙️</span>
+            <span class="progress-count">${stepCount} step${stepCount > 1 ? 's' : ''}</span>
+            ${completedCount < stepCount ? `<span class="progress-spinner">⋯</span>` : ''}
+        </div>
+        <div class="progress-steps">
+            ${steps.map(step => `
+                <div class="progress-step ${step.status}">
+                    <span class="step-icon">${getStepIcon(step.status)}</span>
+                    <span class="step-text">${step.action}</span>
+                    ${step.essays && step.essays.length > 0 ? `<div class="step-essays">${step.essays.join(', ')}</div>` : ''}
+                </div>
+            `).join('')}
+        </div>
+    `;
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// Get icon for step status
+function getStepIcon(status) {
+    switch (status) {
+        case 'completed': return '✓';
+        case 'error': return '✗';
+        case 'in_progress': return '⋯';
+        default: return '○';
     }
 }
 

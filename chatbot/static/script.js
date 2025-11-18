@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     loadConversations();
     loadHistory();
+    updateContextBar();
     setupEventListeners();
     userInput.focus();
 });
@@ -192,6 +193,13 @@ async function sendMessage() {
         return;
     }
 
+    // Check for slash commands
+    if (message === '/context') {
+        showContextInfo();
+        userInput.value = '';
+        return;
+    }
+
     // Remove welcome message if present
     const welcomeMessage = chatContainer.querySelector('.welcome-message');
     if (welcomeMessage) {
@@ -308,6 +316,7 @@ async function sendMessage() {
         addMessage('assistant', 'Error: Failed to communicate with server. Please try again.');
     } finally {
         setProcessing(false);
+        updateContextBar(); // Update context bar after message
         userInput.focus();
     }
 }
@@ -1192,6 +1201,65 @@ function toggleDebugMode() {
             panel.classList.add('hidden');
         }
     });
+}
+
+// Context Bar Functions
+function toggleContextBar() {
+    const contextContent = document.getElementById('context-content');
+    const contextToggle = document.getElementById('context-toggle');
+    const isExpanded = contextContent.classList.contains('expanded');
+
+    if (isExpanded) {
+        contextContent.classList.remove('expanded');
+        contextToggle.textContent = '▶';
+    } else {
+        contextContent.classList.add('expanded');
+        contextToggle.textContent = '▼';
+    }
+}
+
+async function updateContextBar() {
+    try {
+        const response = await fetch('/api/context');
+        const data = await response.json();
+
+        if (data.success) {
+            // Update status
+            const statusText = data.essays_in_context.length > 0
+                ? `${data.essays_in_context.length} essay(s) loaded`
+                : 'No essays loaded';
+            document.getElementById('context-status').textContent = statusText;
+
+            // Update stats
+            document.getElementById('context-enrichment').textContent =
+                data.auto_enrichment_enabled ? 'Enabled' : 'Disabled';
+            document.getElementById('context-essay-count').textContent =
+                data.essays_in_context.length;
+            document.getElementById('context-message-count').textContent =
+                data.total_messages;
+
+            // Format context size
+            const sizeText = data.total_context_chars >= 1000
+                ? `${(data.total_context_chars / 1000).toFixed(1)}k chars`
+                : `${data.total_context_chars} chars`;
+            document.getElementById('context-size').textContent = sizeText;
+
+            // Update essays list
+            const essaysContainer = document.getElementById('context-essays');
+            if (data.essays_in_context.length > 0) {
+                essaysContainer.innerHTML = data.essays_in_context.map(essay => `
+                    <div class="context-essay-item">
+                        <span class="essay-icon">📄</span>
+                        <span class="essay-title">${essay.title}</span>
+                    </div>
+                `).join('');
+            } else {
+                essaysContainer.innerHTML = '<div class="context-empty">No essays loaded yet</div>';
+            }
+        }
+    } catch (error) {
+        console.error('Error updating context bar:', error);
+    }
 }
 
 // Handle errors

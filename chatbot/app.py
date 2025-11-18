@@ -972,6 +972,66 @@ def search_essays_route():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route('/api/context', methods=['GET'])
+def get_context():
+    """Get current conversation context information."""
+    session_id = session.get('session_id')
+    if not session_id:
+        return jsonify({
+            "success": True,
+            "auto_enrichment_enabled": AUTO_CONTEXT_ENRICHMENT,
+            "max_context_essays": MAX_CONTEXT_ESSAYS,
+            "total_messages": 0,
+            "essays_in_context": [],
+            "unique_essays_used": 0,
+            "total_context_chars": 0
+        })
+
+    model = request.args.get('model', DEFAULT_MODEL)
+    manager = ConversationManager(session_id, model)
+    history = manager.get_history()
+
+    # Analyze context from conversation history
+    essays_used = []
+    unique_essay_files = set()
+    total_context_chars = 0
+
+    for msg in history:
+        if msg.get('role') == 'user' and 'context_metadata' in msg:
+            context_meta = msg['context_metadata']
+            if 'essays_included' in context_meta:
+                for essay_file in context_meta['essays_included']:
+                    unique_essay_files.add(essay_file)
+
+        if msg.get('role') == 'assistant' and 'enrichment_steps' in msg:
+            # Extract essay info from enrichment steps
+            for step in msg['enrichment_steps']:
+                if 'essays' in step and step['essays']:
+                    for essay_title in step['essays']:
+                        essays_used.append({
+                            'title': essay_title,
+                            'timestamp': msg.get('timestamp')
+                        })
+
+        if msg.get('role') == 'assistant' and 'debug_info' in msg:
+            debug = msg['debug_info']
+            if 'message_flow' in debug and 'injected_context' in debug['message_flow']:
+                ctx = debug['message_flow']['injected_context']
+                if ctx and 'essays' in ctx:
+                    for essay in ctx['essays']:
+                        total_context_chars += len(essay.get('content', ''))
+
+    return jsonify({
+        "success": True,
+        "auto_enrichment_enabled": AUTO_CONTEXT_ENRICHMENT,
+        "max_context_essays": MAX_CONTEXT_ESSAYS,
+        "total_messages": len(history),
+        "essays_in_context": essays_used[-MAX_CONTEXT_ESSAYS:] if essays_used else [],
+        "unique_essays_used": len(unique_essay_files),
+        "total_context_chars": total_context_chars
+    })
+
+
 @app.route('/api/history', methods=['GET'])
 def get_history():
     """Get conversation history."""

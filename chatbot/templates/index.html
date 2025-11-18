@@ -73,6 +73,39 @@
                 </div>
             </header>
 
+            <!-- Context Bar -->
+            <div class="context-bar" id="context-bar">
+                <div class="context-header" onclick="toggleContextBar()">
+                    <span class="context-toggle" id="context-toggle">▶</span>
+                    <span class="context-icon">📚</span>
+                    <span class="context-title">Context</span>
+                    <span class="context-status" id="context-status">No essays loaded</span>
+                </div>
+                <div class="context-content" id="context-content">
+                    <div class="context-stats">
+                        <div class="context-stat">
+                            <span class="stat-label">Auto-enrichment:</span>
+                            <span class="stat-value" id="context-enrichment">Enabled</span>
+                        </div>
+                        <div class="context-stat">
+                            <span class="stat-label">Essays in context:</span>
+                            <span class="stat-value" id="context-essay-count">0</span>
+                        </div>
+                        <div class="context-stat">
+                            <span class="stat-label">Total messages:</span>
+                            <span class="stat-value" id="context-message-count">0</span>
+                        </div>
+                        <div class="context-stat">
+                            <span class="stat-label">Context size:</span>
+                            <span class="stat-value" id="context-size">0 chars</span>
+                        </div>
+                    </div>
+                    <div class="context-essays" id="context-essays">
+                        <div class="context-empty">No essays loaded yet</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Chat Container -->
             <div class="chat-container" id="chat-container">
                 <div class="welcome-message">

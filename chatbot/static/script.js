@@ -334,11 +334,7 @@ async function sendMessage() {
 
                 const dataStr = line.slice(6); // Remove 'data: ' prefix
                 if (dataStr === '[DONE]') {
-                    // Remove progress indicator
-                    if (progressDiv) {
-                        progressDiv.remove();
-                        progressDiv = null;
-                    }
+                    // Keep progress visible - just mark stream as done
                     continue;
                 }
 
@@ -362,10 +358,16 @@ async function sendMessage() {
                             renderProgressSteps(progressDiv, steps);
                         }
                     } else if (data.type === 'answer') {
-                        // Remove progress, add final answer
-                        if (progressDiv) {
-                            progressDiv.remove();
-                            progressDiv = null;
+                        // Keep progress visible and mark final step as complete
+                        if (progressDiv && steps.length > 0) {
+                            // Mark last step as completed if it's still in progress
+                            const lastStep = steps[steps.length - 1];
+                            if (lastStep.status === 'in_progress') {
+                                lastStep.status = 'completed';
+                                renderProgressSteps(progressDiv, steps);
+                            }
+                            // Add completed class to progress div
+                            progressDiv.classList.add('completed');
                         }
 
                         if (data.success) {

@@ -1398,6 +1398,11 @@ body {
     animation: fadeIn 0.3s ease-in;
 }
 
+.enrichment-progress.completed {
+    border-left-color: #4ade80;
+    opacity: 0.95;
+}
+
 .progress-header {
     display: flex;
     align-items: center;

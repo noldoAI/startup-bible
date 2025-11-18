@@ -39,32 +39,12 @@ const copyShareBtn = document.getElementById('copy-share-btn');
 const copyFeedback = document.getElementById('copy-feedback');
 const shareCloseBtn = document.getElementById('share-close-btn');
 
-// DOM Elements - Essay Navigator
-const essaySidebar = document.getElementById('essay-sidebar');
-const essayToggleBtn = document.getElementById('essay-toggle-btn');
-const essaySidebarClose = document.getElementById('essay-sidebar-close');
-const essaySearchInput = document.getElementById('essay-search-input');
-const essayList = document.getElementById('essay-list');
-const essayListStatus = document.getElementById('essay-list-status');
-const selectedEssaysContainer = document.getElementById('selected-essays-container');
-const selectedEssaysCount = document.getElementById('selected-essays-count');
-const selectedEssaysChips = document.getElementById('selected-essays-chips');
-const clearSelectionBtn = document.getElementById('clear-selection-btn');
-const selectedEssaysBadge = document.getElementById('selected-essays-badge');
-const badgeText = document.getElementById('badge-text');
-const badgeClearBtn = document.getElementById('badge-clear-btn');
-
 // State
 let isProcessing = false;
 let currentSessionId = null;
 let allConversations = [];
 let modalCallback = null;
 let isDebugMode = false;
-
-// Essay State
-let allEssays = [];
-let selectedEssayIds = new Set();
-let essaySearchTimeout = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
@@ -85,20 +65,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     isDebugMode = localStorage.getItem('debugMode') === 'true';
     debugModeCheckbox.checked = isDebugMode;
 
-    // Load selected essays from localStorage
-    const savedEssays = localStorage.getItem('selectedEssays');
-    if (savedEssays) {
-        try {
-            selectedEssayIds = new Set(JSON.parse(savedEssays));
-        } catch (e) {
-            console.error('Failed to load selected essays:', e);
-        }
-    }
-
     loadConversations();
     loadHistory();
     setupEventListeners();
-    loadEssays(); // Load essays on startup
     userInput.focus();
 });
 
@@ -213,35 +182,6 @@ function setupEventListeners() {
             }
         }
     });
-
-    // Essay Navigator
-    essayToggleBtn.addEventListener('click', toggleEssaySidebar);
-    essaySidebarClose.addEventListener('click', toggleEssaySidebar);
-
-    // Essay search with debounce
-    essaySearchInput.addEventListener('input', (e) => {
-        clearTimeout(essaySearchTimeout);
-        const query = e.target.value.trim();
-
-        if (query) {
-            essaySearchTimeout = setTimeout(() => searchEssays(query), 300);
-        } else {
-            essaySearchTimeout = setTimeout(() => renderEssayList(allEssays), 300);
-        }
-    });
-
-    // Clear essay selection
-    clearSelectionBtn.addEventListener('click', clearEssaySelection);
-    badgeClearBtn.addEventListener('click', clearEssaySelection);
-
-    // Click outside essay sidebar to close (mobile)
-    document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768 && essaySidebar.classList.contains('active')) {
-            if (!essaySidebar.contains(e.target) && !essayToggleBtn.contains(e.target)) {
-                essaySidebar.classList.remove('active');
-            }
-        }
-    });
 }
 
 // Send Message with SSE (Server-Sent Events) for real-time progress
@@ -269,37 +209,11 @@ async function sendMessage() {
     setProcessing(true);
 
     try {
-        // Build context if essays are selected
-        let context = null;
-        if (selectedEssayIds.size > 0) {
-            // Fetch full content for selected essays
-            const essayPromises = Array.from(selectedEssayIds).map(id =>
-                fetch(`/api/essays/${id}`).then(r => r.json())
-            );
-
-            const essayResponses = await Promise.all(essayPromises);
-            const essays = essayResponses
-                .filter(r => r.success)
-                .map(r => ({
-                    title: r.essay.title,
-                    file: r.essay.file,
-                    content: r.essay.content
-                }));
-
-            if (essays.length > 0) {
-                context = { essays };
-            }
-        }
-
         // Send to backend via SSE endpoint
         const requestBody = {
             message: message,
             model: modelSelect.value
         };
-
-        if (context) {
-            requestBody.context = context;
-        }
 
         // Create progress indicator element
         let progressDiv = null;
@@ -373,11 +287,6 @@ async function sendMessage() {
                         if (data.success) {
                             addMessage('assistant', data.response, true, data.debug_info);
                             await loadConversations();
-
-                            // Clear essay selection after successful send with context
-                            if (selectedEssayIds.size > 0) {
-                                clearEssaySelection();
-                            }
                         } else {
                             addMessage('assistant', `Error: ${data.error || 'Unknown error occurred'}`);
                         }
@@ -410,20 +319,23 @@ function createProgressIndicator() {
     return div;
 }
 
-// Render progress steps
+// Render progress steps with collapsible UI
 function renderProgressSteps(container, steps) {
     const stepCount = steps.length;
     const completedCount = steps.filter(s => s.status === 'completed').length;
+    const allCompleted = completedCount === stepCount;
+    const isExpanded = container.dataset.expanded !== 'false';
 
     container.innerHTML = `
-        <div class="progress-header">
-            <span class="progress-icon">⚙️</span>
-            <span class="progress-count">${stepCount} step${stepCount > 1 ? 's' : ''}</span>
-            ${completedCount < stepCount ? `<span class="progress-spinner">⋯</span>` : ''}
+        <div class="progress-header" onclick="toggleProgressSteps(this.parentElement)">
+            <span class="progress-toggle">${isExpanded ? '▼' : '▶'}</span>
+            <span class="progress-icon">${allCompleted ? '✓' : '⚙️'}</span>
+            <span class="progress-count">${stepCount} step${stepCount > 1 ? 's' : ''}${allCompleted ? ' completed' : ''}</span>
+            ${!allCompleted ? `<span class="progress-spinner">⋯</span>` : ''}
         </div>
-        <div class="progress-steps">
-            ${steps.map(step => `
-                <div class="progress-step ${step.status}">
+        <div class="progress-steps ${isExpanded ? 'expanded' : 'collapsed'}">
+            ${steps.map((step, i) => `
+                <div class="progress-step ${step.status}" style="animation-delay: ${i * 0.05}s">
                     <span class="step-icon">${getStepIcon(step.status)}</span>
                     <span class="step-text">${step.action}</span>
                     ${step.essays && step.essays.length > 0 ? `<div class="step-essays">${step.essays.join(', ')}</div>` : ''}
@@ -434,12 +346,31 @@ function renderProgressSteps(container, steps) {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
+// Toggle progress steps visibility
+function toggleProgressSteps(container) {
+    const isExpanded = container.dataset.expanded !== 'false';
+    container.dataset.expanded = !isExpanded;
+
+    const stepsDiv = container.querySelector('.progress-steps');
+    const toggle = container.querySelector('.progress-toggle');
+
+    if (isExpanded) {
+        stepsDiv.classList.remove('expanded');
+        stepsDiv.classList.add('collapsed');
+        toggle.textContent = '▶';
+    } else {
+        stepsDiv.classList.remove('collapsed');
+        stepsDiv.classList.add('expanded');
+        toggle.textContent = '▼';
+    }
+}
+
 // Get icon for step status
 function getStepIcon(status) {
     switch (status) {
         case 'completed': return '✓';
         case 'error': return '✗';
-        case 'in_progress': return '⋯';
+        case 'in_progress': return '◐';  // Better loading spinner
         default: return '○';
     }
 }
@@ -476,7 +407,7 @@ function addMessage(role, content, streaming = true, debug_info = null) {
     }
 }
 
-// Typing animation for streaming effect
+// Typing animation for streaming effect - VERY FAST
 function typeMessage(element, text) {
     let index = 0;
     element.textContent = '';
@@ -492,9 +423,11 @@ function typeMessage(element, text) {
             // Remove cursor temporarily
             cursor.remove();
 
-            // Add next character(s) - we'll add 1-3 chars at a time for more natural feel
-            const charsToAdd = Math.random() > 0.7 ? Math.min(3, text.length - index) :
-                               Math.random() > 0.5 ? Math.min(2, text.length - index) : 1;
+            // Add many characters at once for very fast streaming (5-15 chars)
+            const charsToAdd = Math.min(
+                Math.floor(Math.random() * 10) + 5,  // 5-15 chars at a time
+                text.length - index
+            );
 
             const currentText = element.textContent;
             element.textContent = currentText + text.substr(index, charsToAdd);
@@ -506,8 +439,8 @@ function typeMessage(element, text) {
             // Scroll to bottom
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Variable speed for more natural feel (15-35ms per batch)
-            const delay = Math.random() * 20 + 15;
+            // Very fast delay (2-5ms per batch)
+            const delay = Math.random() * 3 + 2;
             setTimeout(typeNextChar, delay);
         } else {
             // Remove cursor when done
@@ -1252,217 +1185,6 @@ function toggleDebugMode() {
             panel.classList.add('hidden');
         }
     });
-}
-
-// Essay Navigator Functions
-async function loadEssays() {
-    try {
-        essayListStatus.textContent = 'Loading essays...';
-        const response = await fetch('/api/essays');
-        const data = await response.json();
-
-        if (data.success) {
-            allEssays = data.essays;
-            essayListStatus.textContent = `${data.count} essays available`;
-            renderEssayList(allEssays);
-            updateSelectedEssaysUI();
-        } else {
-            essayListStatus.textContent = 'Failed to load essays';
-            console.error('Failed to load essays:', data.error);
-        }
-    } catch (error) {
-        essayListStatus.textContent = 'Error loading essays';
-        console.error('Error loading essays:', error);
-    }
-}
-
-async function searchEssays(query) {
-    try {
-        essayListStatus.textContent = `Searching for "${query}"...`;
-        const response = await fetch(`/api/essays/search?q=${encodeURIComponent(query)}&limit=50`);
-        const data = await response.json();
-
-        if (data.success) {
-            essayListStatus.textContent = `${data.results.length} results for "${query}"`;
-            renderEssayList(data.results);
-        } else {
-            essayListStatus.textContent = 'Search failed';
-            console.error('Search failed:', data.error);
-        }
-    } catch (error) {
-        essayListStatus.textContent = 'Search error';
-        console.error('Error searching essays:', error);
-    }
-}
-
-function renderEssayList(essays) {
-    essayList.innerHTML = '';
-
-    if (essays.length === 0) {
-        essayList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No essays found</div>';
-        return;
-    }
-
-    essays.forEach(essay => {
-        const item = document.createElement('div');
-        item.className = 'essay-item';
-        if (selectedEssayIds.has(essay.id)) {
-            item.classList.add('selected');
-        }
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'essay-checkbox';
-        checkbox.checked = selectedEssayIds.has(essay.id);
-        checkbox.addEventListener('change', (e) => {
-            e.stopPropagation();
-            toggleEssaySelection(essay.id);
-        });
-
-        const content = document.createElement('div');
-        content.className = 'essay-item-content';
-
-        const title = document.createElement('div');
-        title.className = 'essay-item-title';
-        title.textContent = essay.title;
-
-        const meta = document.createElement('div');
-        meta.className = 'essay-item-meta';
-
-        if (essay.date) {
-            const date = document.createElement('span');
-            date.textContent = essay.date;
-            meta.appendChild(date);
-        }
-
-        if (essay.word_count) {
-            const words = document.createElement('span');
-            words.textContent = `${essay.word_count.toLocaleString()} words`;
-            meta.appendChild(words);
-        }
-
-        content.appendChild(title);
-        content.appendChild(meta);
-
-        // Add topics if available
-        if (essay.topics && essay.topics.length > 0) {
-            const topics = document.createElement('div');
-            topics.className = 'essay-item-topics';
-
-            essay.topics.slice(0, 3).forEach(topic => {
-                const tag = document.createElement('span');
-                tag.className = 'topic-tag';
-                tag.textContent = topic;
-                topics.appendChild(tag);
-            });
-
-            content.appendChild(topics);
-        }
-
-        item.appendChild(checkbox);
-        item.appendChild(content);
-
-        // Click on item to toggle selection
-        item.addEventListener('click', (e) => {
-            if (e.target !== checkbox) {
-                toggleEssaySelection(essay.id);
-            }
-        });
-
-        essayList.appendChild(item);
-    });
-}
-
-function toggleEssaySelection(essayId) {
-    if (selectedEssayIds.has(essayId)) {
-        selectedEssayIds.delete(essayId);
-    } else {
-        selectedEssayIds.add(essayId);
-    }
-
-    // Save to localStorage
-    localStorage.setItem('selectedEssays', JSON.stringify(Array.from(selectedEssayIds)));
-
-    // Update UI
-    updateSelectedEssaysUI();
-
-    // Update essay list to reflect selection
-    const query = essaySearchInput.value.trim();
-    if (query) {
-        // Re-render search results if searching
-        const currentEssays = Array.from(essayList.children).map(item => {
-            const id = item.querySelector('.essay-checkbox')?.id || '';
-            return allEssays.find(e => e.id === id);
-        }).filter(Boolean);
-        renderEssayList(currentEssays);
-    } else {
-        renderEssayList(allEssays);
-    }
-}
-
-function updateSelectedEssaysUI() {
-    const count = selectedEssayIds.size;
-
-    // Update badge above input
-    if (count > 0) {
-        selectedEssaysBadge.style.display = 'flex';
-        badgeText.textContent = `${count} essay${count > 1 ? 's' : ''} selected`;
-    } else {
-        selectedEssaysBadge.style.display = 'none';
-    }
-
-    // Update selected essays container in sidebar
-    if (count > 0) {
-        selectedEssaysContainer.style.display = 'block';
-        selectedEssaysCount.textContent = `${count} selected`;
-
-        // Render chips
-        selectedEssaysChips.innerHTML = '';
-        const selectedEssays = allEssays.filter(e => selectedEssayIds.has(e.id));
-
-        selectedEssays.forEach(essay => {
-            const chip = document.createElement('div');
-            chip.className = 'selected-essay-chip';
-
-            const title = document.createElement('span');
-            title.className = 'essay-title-short';
-            title.textContent = essay.title;
-            title.title = essay.title; // Full title on hover
-
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'btn-remove-essay';
-            removeBtn.textContent = '×';
-            removeBtn.title = 'Remove essay';
-            removeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleEssaySelection(essay.id);
-            });
-
-            chip.appendChild(title);
-            chip.appendChild(removeBtn);
-            selectedEssaysChips.appendChild(chip);
-        });
-    } else {
-        selectedEssaysContainer.style.display = 'none';
-    }
-}
-
-function clearEssaySelection() {
-    selectedEssayIds.clear();
-    localStorage.removeItem('selectedEssays');
-    updateSelectedEssaysUI();
-
-    // Re-render essay list to update checkboxes
-    const query = essaySearchInput.value.trim();
-    if (query) {
-        searchEssays(query);
-    } else {
-        renderEssayList(allEssays);
-    }
-}
-
-function toggleEssaySidebar() {
-    essaySidebar.classList.toggle('active');
 }
 
 // Handle errors

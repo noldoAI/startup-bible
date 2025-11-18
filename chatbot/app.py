@@ -992,26 +992,21 @@ def get_context():
     history = manager.get_history()
 
     # Analyze context from conversation history
-    essays_used = []
-    unique_essay_files = set()
+    unique_essays_map = {}  # title -> {title, timestamp}
     total_context_chars = 0
 
     for msg in history:
-        if msg.get('role') == 'user' and 'context_metadata' in msg:
-            context_meta = msg['context_metadata']
-            if 'essays_included' in context_meta:
-                for essay_file in context_meta['essays_included']:
-                    unique_essay_files.add(essay_file)
-
         if msg.get('role') == 'assistant' and 'enrichment_steps' in msg:
             # Extract essay info from enrichment steps
             for step in msg['enrichment_steps']:
                 if 'essays' in step and step['essays']:
                     for essay_title in step['essays']:
-                        essays_used.append({
-                            'title': essay_title,
-                            'timestamp': msg.get('timestamp')
-                        })
+                        # Keep track of unique essays with their first appearance
+                        if essay_title not in unique_essays_map:
+                            unique_essays_map[essay_title] = {
+                                'title': essay_title,
+                                'timestamp': msg.get('timestamp')
+                            }
 
         if msg.get('role') == 'assistant' and 'debug_info' in msg:
             debug = msg['debug_info']
@@ -1021,13 +1016,20 @@ def get_context():
                     for essay in ctx['essays']:
                         total_context_chars += len(essay.get('content', ''))
 
+    # Convert to list, sorted by timestamp (most recent first)
+    all_essays_used = sorted(
+        unique_essays_map.values(),
+        key=lambda x: x.get('timestamp', ''),
+        reverse=True
+    )
+
     return jsonify({
         "success": True,
         "auto_enrichment_enabled": AUTO_CONTEXT_ENRICHMENT,
         "max_context_essays": MAX_CONTEXT_ESSAYS,
         "total_messages": len(history),
-        "essays_in_context": essays_used[-MAX_CONTEXT_ESSAYS:] if essays_used else [],
-        "unique_essays_used": len(unique_essay_files),
+        "essays_in_context": all_essays_used,
+        "unique_essays_used": len(unique_essays_map),
         "total_context_chars": total_context_chars
     })
 

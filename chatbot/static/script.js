@@ -46,6 +46,47 @@ let allConversations = [];
 let modalCallback = null;
 let isDebugMode = false;
 
+// Markdown Parser Configuration
+function parseMarkdown(text) {
+    // Configure marked.js options
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+                try {
+                    return hljs.highlight(code, { language: lang }).value;
+                } catch (e) {
+                    console.error('Highlight error:', e);
+                }
+            }
+            return hljs.highlightAuto(code).value;
+        },
+        breaks: true, // Convert \n to <br>
+        gfm: true, // GitHub Flavored Markdown
+        headerIds: false, // Don't add IDs to headers
+        mangle: false // Don't escape autolinked emails
+    });
+
+    // Parse markdown to HTML
+    const rawHtml = marked.parse(text);
+
+    // Sanitize HTML to prevent XSS attacks
+    const cleanHtml = DOMPurify.sanitize(rawHtml, {
+        ALLOWED_TAGS: [
+            'p', 'br', 'strong', 'em', 'u', 's', 'code', 'pre',
+            'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'ul', 'ol', 'li',
+            'blockquote',
+            'a', 'img',
+            'table', 'thead', 'tbody', 'tr', 'th', 'td',
+            'hr',
+            'span', 'div'
+        ],
+        ALLOWED_ATTR: ['href', 'title', 'target', 'rel', 'class', 'src', 'alt']
+    });
+
+    return cleanHtml;
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
     // Extract session ID from URL or template
@@ -407,43 +448,38 @@ function addMessage(role, content, streaming = true, debug_info = null) {
     chatContainer.appendChild(messageDiv);
 
     // For user messages or when loading history, show immediately
-    if (role === 'user' || !streaming) {
+    if (role === 'user') {
+        // User messages stay as plain text for security
         messageContent.textContent = content;
         chatContainer.scrollTop = chatContainer.scrollHeight;
+    } else if (!streaming) {
+        // Assistant messages from history - render markdown immediately
+        messageContent.innerHTML = parseMarkdown(content);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
     } else {
-        // For assistant messages, add typing animation
+        // For assistant messages, add typing animation with markdown
         typeMessage(messageContent, content);
     }
 }
 
-// Typing animation for streaming effect - VERY FAST
+// Typing animation for streaming effect - VERY FAST with markdown rendering
 function typeMessage(element, text) {
     let index = 0;
-    element.textContent = '';
-
-    // Add typing cursor
-    const cursor = document.createElement('span');
-    cursor.className = 'typing-cursor';
-    cursor.textContent = '▌';
-    element.appendChild(cursor);
+    let accumulatedText = '';
 
     function typeNextChar() {
         if (index < text.length) {
-            // Remove cursor temporarily
-            cursor.remove();
-
             // Add many characters at once for very fast streaming (5-15 chars)
             const charsToAdd = Math.min(
                 Math.floor(Math.random() * 10) + 5,  // 5-15 chars at a time
                 text.length - index
             );
 
-            const currentText = element.textContent;
-            element.textContent = currentText + text.substr(index, charsToAdd);
+            accumulatedText += text.substr(index, charsToAdd);
             index += charsToAdd;
 
-            // Re-add cursor
-            element.appendChild(cursor);
+            // Parse and render markdown with typing cursor
+            element.innerHTML = parseMarkdown(accumulatedText) + '<span class="typing-cursor">▌</span>';
 
             // Scroll to bottom
             chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -452,8 +488,8 @@ function typeMessage(element, text) {
             const delay = Math.random() * 3 + 2;
             setTimeout(typeNextChar, delay);
         } else {
-            // Remove cursor when done
-            cursor.remove();
+            // Final render without cursor
+            element.innerHTML = parseMarkdown(text);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     }
